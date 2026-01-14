@@ -8,12 +8,22 @@ import google.generativeai as genai
 
 RULES_PATH = "rules/goyabu.json"
 
-# Configura API Gemini
-genai.configure(
-    api_key=os.getenv("GEMINI_API_KEY")
-)
+# Configuração de múltiplas APIs (até 5)
+API_KEYS = [
+    os.getenv("GEMINI_API_KEY_1"),
+    os.getenv("GEMINI_API_KEY_2"),
+    os.getenv("GEMINI_API_KEY_3"),
+    os.getenv("GEMINI_API_KEY_4"),
+    os.getenv("GEMINI_API_KEY_5"),
+]
 
-model = genai.GenerativeModel("gemini-3-pro-preview")
+MODELS = [
+    "gemini-3-pro-preview",
+    "gemini-3-pro-preview",
+    "gemini-3-pro-preview",
+    "gemini-3-pro-preview",
+    "gemini-3-pro-preview",
+]
 
 SYSTEM_PROMPT = """
 Você é um analisador de HTML para web scraping.
@@ -23,7 +33,19 @@ NUNCA explique nada.
 Responda SOMENTE em JSON válido.
 """
 
-def analyze_and_update_rules(html, context):
+def analyze_and_update_rules(html, context, api_index=0):
+    """
+    html: conteúdo HTML
+    context: "episode_list" ou "stream"
+    api_index: índice da API/KEY a usar (0-4)
+    """
+    if api_index < 0 or api_index >= len(API_KEYS):
+        print("[IA] Índice de API inválido, usando 0")
+        api_index = 0
+
+    genai.configure(api_key=API_KEYS[api_index])
+    model = genai.GenerativeModel(MODELS[api_index])
+
     rules = load_json(RULES_PATH, default={})
 
     if context == "episode_list":
@@ -55,12 +77,12 @@ Retorne EXATAMENTE neste formato:
         + "\n\n"
         + instruction
         + "\n\nHTML (resumido):\n"
-        + html[:12000]   # 🔥 limita tokens
+        + html[:12000]
     )
 
     try:
-        response = client.models.generate_content(
-            model="gemini-3-pro-preview",
+        response = model.generate_content(
+            model=MODELS[api_index],
             contents=prompt
         )
 
@@ -74,10 +96,9 @@ Retorne EXATAMENTE neste formato:
         new_rules = json.loads(content)
 
     except Exception as e:
-        print("[IA] Falha ao analisar HTML:", e)
+        print(f"[IA] Falha ao analisar HTML usando API {api_index+1}:", e)
         return False
 
-    # Validação mínima
     if not isinstance(new_rules, dict):
         print("[IA] Resposta inválida (não é dict)")
         return False
@@ -85,5 +106,5 @@ Retorne EXATAMENTE neste formato:
     rules.update(new_rules)
     save_json(RULES_PATH, rules)
 
-    print("[IA] Regras atualizadas:", new_rules)
+    print(f"[IA] Regras atualizadas usando API {api_index+1}:", new_rules)
     return True
