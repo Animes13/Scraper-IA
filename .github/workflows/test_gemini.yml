@@ -27,4 +27,4 @@ jobs:
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
-          python scraper_ia/test_gemini_github.py
+          python test_gemini_github.py
