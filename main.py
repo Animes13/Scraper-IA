@@ -11,15 +11,46 @@ from utils.sanitizer import sanitize_html
 from scraper.fetch import fetch_html
 from ia.analyzer import analyze_and_update_rules
 
+import os
+
 RULES_PATH = "rules/goyabu.json"
 DATA_PATH = "data/goyabu_animes.json"
+
+# 🔑 Lista de APIs Gemini (secret names do GitHub Actions)
+GEMINI_KEYS = [
+    "GEMINI_API_KEY_1",
+    "GEMINI_API_KEY_2",
+    "GEMINI_API_KEY_3",
+    "GEMINI_API_KEY_4",
+    "GEMINI_API_KEY_5",
+]
+
+
+def try_analyze_with_multiple_apis(html, context):
+    """
+    Tenta atualizar regras usando até 5 APIs Gemini diferentes.
+    Retorna True se alguma conseguir atualizar.
+    """
+    for key_name in GEMINI_KEYS:
+        api_key = os.getenv(key_name)
+        if not api_key:
+            continue
+
+        os.environ["GEMINI_API_KEY"] = api_key
+        print(f"[IA] Tentando com {key_name}...")
+
+        if analyze_and_update_rules(html, context):
+            print(f"[IA] Sucesso com {key_name}")
+            return True
+
+    print("[IA] Todas as APIs falharam")
+    return False
 
 
 def main():
     resolver = StreamResolver()
     final_data = {}
 
-    # 🔒 Proteção anti-loop da IA
     ia_used = {
         "episode_list": False,
         "stream": False
@@ -55,11 +86,7 @@ def main():
                 html = fetch_html(url)
                 clean = sanitize_html(html)
 
-                ok = analyze_and_update_rules(
-                    html=clean,
-                    context="episode_list"
-                )
-
+                ok = try_analyze_with_multiple_apis(html, "episode_list")
                 ia_used["episode_list"] = True
 
                 if ok:
@@ -97,11 +124,7 @@ def main():
                     html = fetch_html(ep_url)
                     clean = sanitize_html(html)
 
-                    ok = analyze_and_update_rules(
-                        html=clean,
-                        context="stream"
-                    )
-
+                    ok = try_analyze_with_multiple_apis(html, "stream")
                     ia_used["stream"] = True
 
                     if ok:
