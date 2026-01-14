@@ -28,13 +28,36 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      # 4️⃣ Rodar scraper (com GEMINI_API_KEY)
+      # 4️⃣ Rodar scraper com 5 APIs
       - name: Run scraper
         env:
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_API_KEY_1: ${{ secrets.GEMINI_API_KEY_1 }}
+          GEMINI_API_KEY_2: ${{ secrets.GEMINI_API_KEY_2 }}
+          GEMINI_API_KEY_3: ${{ secrets.GEMINI_API_KEY_3 }}
+          GEMINI_API_KEY_4: ${{ secrets.GEMINI_API_KEY_4 }}
+          GEMINI_API_KEY_5: ${{ secrets.GEMINI_API_KEY_5 }}
         run: |
           python main.py
 
+      # 5️⃣ Verificar mudanças
+      - name: Check for changes
+        id: git-check
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+          fi
+
+      # 6️⃣ Commit e push automático (se houver mudanças)
+      - name: Commit and push
+        if: steps.git-check.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add data/goyabu_animes.json rules/goyabu.json
+          git commit -m "🔄 Atualização automática do scraper" || echo "No changes to commit"
+          git push
       # 5️⃣ Verificar mudanças
       - name: Check for changes
         id: git-check
