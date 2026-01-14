@@ -1,4 +1,6 @@
 # ia/analyzer.py
+# -*- coding: utf-8 -*-
+
 import json
 import os
 from utils.storage import load_json, save_json
@@ -6,6 +8,7 @@ from google import genai
 
 RULES_PATH = "rules/goyabu.json"
 
+# Suporte a 5 APIs
 API_KEYS = [
     os.getenv("GEMINI_API_KEY_1"),
     os.getenv("GEMINI_API_KEY_2"),
@@ -23,11 +26,17 @@ Responda SOMENTE em JSON válido.
 """
 
 def analyze_and_update_rules(html, context):
+    """
+    Analisa o HTML e atualiza o arquivo de regras usando Gemini.
+    context: "episode_list" ou "stream"
+    Retorna True se alguma API conseguir atualizar as regras.
+    """
     rules = load_json(RULES_PATH, default={})
 
     if context == "episode_list":
         instruction = """
 Analise o HTML e encontre onde os episódios estão definidos em JavaScript.
+
 Retorne EXATAMENTE neste formato:
 {
   "episode_js_key": "const allEpisodes",
@@ -37,6 +46,7 @@ Retorne EXATAMENTE neste formato:
     elif context == "stream":
         instruction = """
 Analise o HTML e encontre o player de vídeo.
+
 Retorne EXATAMENTE neste formato:
 {
   "player_button": "seletor_css",
@@ -52,23 +62,19 @@ Retorne EXATAMENTE neste formato:
     for idx, key in enumerate(API_KEYS, start=1):
         if not key:
             continue
-
         print(f"[IA] Tentando com GEMINI_API_KEY_{idx}...")
+
         try:
-            # Cria client com a chave diretamente
             client = genai.Client(api_key=key)
 
-            response = client.chat.completions.create(
-                model="gemini-3.5-turbo",
-                messages=[
-                    {"role": "system", "content": SYSTEM_PROMPT},
-                    {"role": "user", "content": instruction + "\n\nHTML:\n" + html[:12000]}
-                ],
-                temperature=0
+            response = client.models.generate_content(
+                model="gemini-3-flash-preview",
+                contents=prompt
             )
 
-            content = response.choices[0].message.content.strip()
+            content = response.text.strip()
 
+            # Proteção: às vezes envolve em ```json
             if content.startswith("```"):
                 content = content.strip("`").replace("json", "", 1).strip()
 
