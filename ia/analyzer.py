@@ -4,7 +4,7 @@
 import json
 import os
 from utils.storage import load_json, save_json
-from google import genai
+import genai  # google-genai
 
 RULES_PATH = "rules/goyabu.json"
 
@@ -19,7 +19,7 @@ API_KEYS = [
 
 SYSTEM_PROMPT = """
 Você é um analisador de HTML para web scraping.
-Sua tarefa APENAS identifica seletores CSS ou padrões regex.
+Sua tarefa APENAS identificar seletores CSS ou padrões regex.
 NUNCA extraia nomes de filmes, animes ou episódios.
 NUNCA explique nada.
 Responda SOMENTE em JSON válido.
@@ -56,20 +56,27 @@ Retorne EXATAMENTE neste formato:
 
     # Tenta todas as APIs
     for idx, key in enumerate(API_KEYS, start=1):
+        if not key:
+            continue
+
         print(f"[IA] Tentando com GEMINI_API_KEY_{idx}...")
         try:
-            client = genai.Client(api_key=key)
-            response = client.generate_text(
+            genai.configure(api_key=key)
+
+            response = genai.chat.completions.create(
                 model="gemini-3.5-turbo",
-                prompt=prompt,
+                messages=[
+                    {"role": "system", "content": SYSTEM_PROMPT},
+                    {"role": "user", "content": instruction + "\n\nHTML:\n" + html[:12000]}
+                ],
                 temperature=0
             )
-            content = response.text.strip()
 
-            # Proteção: às vezes envolve em ```json
+            # Obtem o texto da resposta
+            content = response.choices[0].message.content.strip()
+
             if content.startswith("```"):
-                content = content.strip("`")
-                content = content.replace("json", "", 1).strip()
+                content = content.strip("`").replace("json", "", 1).strip()
 
             new_rules = json.loads(content)
 
