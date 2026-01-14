@@ -8,7 +8,6 @@ on:
 jobs:
   scrape:
     runs-on: ubuntu-latest
-    timeout-minutes: 180
     permissions:
       contents: write   # ✅ Permite commit e push automático
 
