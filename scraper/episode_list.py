@@ -3,9 +3,9 @@
 
 import json
 import re
-
 from scraper.fetch import fetch_html
-from utils.storage import load_json
+from utils.storage import load_json, save_json
+from ia.analyzer import analyze_and_update_rules
 
 BASE = "https://goyabu.io"
 RULES_PATH = "rules/goyabu.json"
@@ -52,28 +52,40 @@ def get_episodes(anime_url):
 
     # 📺 Série
     match = re.search(
-        r"const\s+allEpisodes\s*=\s*(\[[\s\S]*?\])\s*;",
+        rf"{rules.get('episode_js_key', 'const allEpisodes')}\s*=\s*(\[[\s\S]*?\])\s*;",
         html
     )
 
     if not match:
-        return []
+        # ❌ Episódios não encontrados → acionando IA
+        old_rules = load_json(RULES_PATH, default={})
+        ok = analyze_and_update_rules(html, "episode_list")
+
+        if ok:
+            print("    [EPISODES] IA atualizou as regras, tentando novamente...")
+            rules = load_json(RULES_PATH)
+            match = re.search(
+                rf"{rules.get('episode_js_key', 'const allEpisodes')}\s*=\s*(\[[\s\S]*?\])\s*;",
+                html
+            )
+
+        if not match:
+            # ❌ IA não resolveu → rollback
+            save_json(RULES_PATH, old_rules)
+            return []
 
     raw = match.group(1)
 
     try:
-        # JS → JSON seguro
         raw = raw.replace("\\/", "/")
         episodes = json.loads(raw)
     except Exception:
         return []
 
     result = []
-
     for ep in episodes:
         ep_num = ep.get("episodio") or ep.get("episode")
         ep_id = ep.get("id")
-
         if not ep_num or not ep_id:
             continue
 
