@@ -9,7 +9,7 @@ jobs:
   scrape:
     runs-on: ubuntu-latest
     permissions:
-      contents: write   # ✅ Permite commit e push automático
+      contents: write   # Permite commit e push automático
 
     steps:
       # 1️⃣ Checkout do repositório
@@ -39,22 +39,14 @@ jobs:
         run: |
           python main.py
 
-      # 5️⃣ Verificar mudanças
-      - name: Check for changes
-        id: git-check-changes
-        run: |
-          if [ -n "$(git status --porcelain)" ]; then
-            echo "changed=true" >> $GITHUB_OUTPUT
-          else
-            echo "changed=false" >> $GITHUB_OUTPUT
-          fi
-
-      # 6️⃣ Commit e push automático (se houver mudanças)
-      - name: Commit and push
-        if: steps.git-check-changes.outputs.changed == 'true'
+      # 5️⃣ Commit e push automático (se houver mudanças)
+      - name: Commit and push changes
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
           git add data/goyabu_animes.json rules/goyabu.json
-          git commit -m "🔄 Atualização automática do scraper" || echo "No changes to commit"
-          git push
+          if [ -n "$(git status --porcelain)" ]; then
+            git commit -m "🔄 Atualização automática do scraper"
+            git push
+          else
+            echo "Nenhuma mudança para commitar"
