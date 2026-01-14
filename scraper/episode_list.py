@@ -3,7 +3,6 @@
 
 import json
 import re
-from bs4 import BeautifulSoup
 
 from scraper.fetch import fetch_html
 from utils.storage import load_json
@@ -12,6 +11,9 @@ BASE = "https://goyabu.io"
 RULES_PATH = "rules/goyabu.json"
 
 
+# ======================================
+# Detecta se é filme (1 episódio)
+# ======================================
 def detect_is_movie(html, rules):
     key = rules.get("episode_js_key", "const allEpisodes")
 
@@ -19,32 +21,66 @@ def detect_is_movie(html, rules):
         return False
 
     try:
-        m = re.search(r"const allEpisodes\s*=\s*([\s\S]*?);", html)
-        if not m:
+        match = re.search(
+            r"const\s+allEpisodes\s*=\s*(\[[\s\S]*?\])\s*;",
+            html
+        )
+        if not match:
             return False
 
-        eps = json.loads(m.group(1).replace("\\/", "/"))
-        return isinstance(eps, list) and len(eps) == 1
+        episodes = json.loads(match.group(1))
+        return isinstance(episodes, list) and len(episodes) == 1
+
     except Exception:
         return False
 
 
+# ======================================
+# Lista episódios
+# ======================================
 def get_episodes(anime_url):
     rules = load_json(RULES_PATH)
     html = fetch_html(anime_url)
 
-    # 🎬 Filme?
+    # 🎬 Filme
     if detect_is_movie(html, rules):
         return [{
-            "episode": 1,
+            "episode": "1",
             "url": anime_url,
             "type": "movie"
         }]
 
     # 📺 Série
-    m = re.search(r"const allEpisodes\s*=\s*([\s\S]*?);", html)
-    if not m:
+    match = re.search(
+        r"const\s+allEpisodes\s*=\s*(\[[\s\S]*?\])\s*;",
+        html
+    )
+
+    if not match:
         return []
 
+    raw = match.group(1)
+
     try:
-        episodes = json.loads(m.group(1).replace("\\
+        # JS → JSON seguro
+        raw = raw.replace("\\/", "/")
+        episodes = json.loads(raw)
+    except Exception:
+        return []
+
+    result = []
+
+    for ep in episodes:
+        ep_num = ep.get("episodio") or ep.get("episode")
+        ep_id = ep.get("id")
+
+        if not ep_num or not ep_id:
+            continue
+
+        result.append({
+            "episode": str(ep_num),
+            "url": f"{BASE}/{ep_id}",
+            "type": "episode"
+        })
+
+    return result
