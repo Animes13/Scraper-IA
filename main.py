@@ -6,7 +6,6 @@ from scraper.episode_list import get_episodes
 from scraper.stream_resolver import StreamResolver
 
 from utils.storage import save_json, load_json
-from utils.validator import selector_has_results
 from utils.sanitizer import sanitize_html
 
 from scraper.fetch import fetch_html
@@ -15,14 +14,16 @@ from ia.analyzer import analyze_and_update_rules
 RULES_PATH = "rules/goyabu.json"
 DATA_PATH = "data/goyabu_animes.json"
 
-BASE_LIST_URL = "https://goyabu.io/lista-de-animes"
-
 
 def main():
-    rules = load_json(RULES_PATH, default={})
     resolver = StreamResolver()
-
     final_data = {}
+
+    # 🔒 Proteção anti-loop da IA
+    ia_used = {
+        "episode_list": False,
+        "stream": False
+    }
 
     page = 1
     while True:
@@ -38,29 +39,48 @@ def main():
 
             print(f"  ▶ Anime: {name}")
 
+            # ===============================
+            # EPISÓDIOS
+            # ===============================
             try:
                 episodes = get_episodes(url)
             except Exception:
                 episodes = []
 
-            if not episodes:
+            if not episodes and not ia_used["episode_list"]:
                 print("    ❌ Episódios não encontrados → acionando IA")
+
+                old_rules = load_json(RULES_PATH, default={})
 
                 html = fetch_html(url)
                 clean = sanitize_html(html)
 
-                analyze_and_update_rules(
+                ok = analyze_and_update_rules(
                     html=clean,
                     context="episode_list"
                 )
 
-                episodes = get_episodes(url)
+                ia_used["episode_list"] = True
+
+                if ok:
+                    episodes = get_episodes(url)
+
+                # ❌ IA não resolveu → rollback
+                if not episodes:
+                    print("    ⛔ IA falhou → revertendo regras")
+                    save_json(RULES_PATH, old_rules)
+
+            if not episodes:
+                continue
 
             anime_entry = {
                 "url": url,
                 "episodes": {}
             }
 
+            # ===============================
+            # STREAMS
+            # ===============================
             for ep in episodes:
                 ep_num = str(ep["episode"])
                 ep_url = ep["url"]
@@ -69,18 +89,28 @@ def main():
 
                 stream = resolver.resolve(ep_url)
 
-                if not stream:
-                    print("      ❌ Stream falhou → IA")
+                if not stream and not ia_used["stream"]:
+                    print("      ❌ Stream falhou → acionando IA")
+
+                    old_rules = load_json(RULES_PATH, default={})
 
                     html = fetch_html(ep_url)
                     clean = sanitize_html(html)
 
-                    analyze_and_update_rules(
+                    ok = analyze_and_update_rules(
                         html=clean,
                         context="stream"
                     )
 
-                    stream = resolver.resolve(ep_url)
+                    ia_used["stream"] = True
+
+                    if ok:
+                        stream = resolver.resolve(ep_url)
+
+                    # ❌ IA não resolveu → rollback
+                    if not stream:
+                        print("      ⛔ IA falhou → revertendo regras")
+                        save_json(RULES_PATH, old_rules)
 
                 if stream:
                     anime_entry["episodes"][ep_num] = stream
