@@ -3,12 +3,14 @@ name: Goyabu Scraper IA
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 */6 * * *"   # a cada 6 horas
+    - cron: "0 */6 * * *"   # Executa a cada 6 horas
 
 jobs:
   scrape:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 180
+    permissions:
+      contents: write   # ✅ Permite commit e push automático
 
     steps:
       # 1️⃣ Checkout do repositório
@@ -44,12 +46,12 @@ jobs:
             echo "changed=false" >> $GITHUB_OUTPUT
           fi
 
-      # 6️⃣ Commit automático (se mudou)
+      # 6️⃣ Commit e push automático (se houve mudanças)
       - name: Commit and push
         if: steps.git-check.outputs.changed == 'true'
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
           git add data/goyabu_animes.json rules/goyabu.json
-          git commit -m "🔄 Atualização automática do scraper"
+          git commit -m "🔄 Atualização automática do scraper" || echo "No changes to commit"
           git push
