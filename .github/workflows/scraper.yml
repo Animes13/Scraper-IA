@@ -41,7 +41,7 @@ jobs:
 
       # 5️⃣ Verificar mudanças
       - name: Check for changes
-        id: git-check
+        id: git-check-changes
         run: |
           if [ -n "$(git status --porcelain)" ]; then
             echo "changed=true" >> $GITHUB_OUTPUT
@@ -51,26 +51,7 @@ jobs:
 
       # 6️⃣ Commit e push automático (se houver mudanças)
       - name: Commit and push
-        if: steps.git-check.outputs.changed == 'true'
-        run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
-          git add data/goyabu_animes.json rules/goyabu.json
-          git commit -m "🔄 Atualização automática do scraper" || echo "No changes to commit"
-          git push
-      # 5️⃣ Verificar mudanças
-      - name: Check for changes
-        id: git-check
-        run: |
-          if [ -n "$(git status --porcelain)" ]; then
-            echo "changed=true" >> $GITHUB_OUTPUT
-          else
-            echo "changed=false" >> $GITHUB_OUTPUT
-          fi
-
-      # 6️⃣ Commit e push automático (se houve mudanças)
-      - name: Commit and push
-        if: steps.git-check.outputs.changed == 'true'
+        if: steps.git-check-changes.outputs.changed == 'true'
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
