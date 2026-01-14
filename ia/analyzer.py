@@ -1,6 +1,4 @@
 # ia/analyzer.py
-# -*- coding: utf-8 -*-
-
 import json
 import os
 from utils.storage import load_json, save_json
@@ -8,7 +6,6 @@ from google import genai
 
 RULES_PATH = "rules/goyabu.json"
 
-# Suporte a 5 APIs
 API_KEYS = [
     os.getenv("GEMINI_API_KEY_1"),
     os.getenv("GEMINI_API_KEY_2"),
@@ -26,11 +23,6 @@ Responda SOMENTE em JSON válido.
 """
 
 def analyze_and_update_rules(html, context):
-    """
-    Analisa o HTML usando Gemini e atualiza o arquivo de regras.
-    context: "episode_list" ou "stream"
-    Retorna True se atualizou regras com sucesso.
-    """
     rules = load_json(RULES_PATH, default={})
 
     if context == "episode_list":
@@ -54,6 +46,8 @@ Retorne EXATAMENTE neste formato:
     else:
         return False
 
+    prompt = SYSTEM_PROMPT + "\n\n" + instruction + "\n\nHTML (resumido):\n" + html[:12000]
+
     # Tenta todas as APIs
     for idx, key in enumerate(API_KEYS, start=1):
         if not key:
@@ -61,11 +55,10 @@ Retorne EXATAMENTE neste formato:
 
         print(f"[IA] Tentando com GEMINI_API_KEY_{idx}...")
         try:
-            # Configura a API
-            genai.configure(api_key=key)
+            # Cria client com a chave diretamente
+            client = genai.Client(api_key=key)
 
-            # Chamada ao Gemini Chat
-            response = genai.chat.completions.create(
+            response = client.chat.completions.create(
                 model="gemini-3.5-turbo",
                 messages=[
                     {"role": "system", "content": SYSTEM_PROMPT},
@@ -74,10 +67,8 @@ Retorne EXATAMENTE neste formato:
                 temperature=0
             )
 
-            # Obtem o texto da resposta
             content = response.choices[0].message.content.strip()
 
-            # Limpeza de possíveis ```json
             if content.startswith("```"):
                 content = content.strip("`").replace("json", "", 1).strip()
 
