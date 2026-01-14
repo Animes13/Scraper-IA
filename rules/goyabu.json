@@ -1,0 +1,7 @@
+{
+  "anime_card": "article",
+  "anime_link": "a[href]",
+  "episode_js_key": "const allEpisodes",
+  "player_button": "button.player-tab[data-blogger-url-encrypted]",
+  "blogger_regex": "https://www\\.blogger\\.com/video\\.g[^\"']+"
+}
