@@ -4,14 +4,16 @@
 import json
 import os
 from utils.storage import load_json, save_json
-from google import genai
+import google.generativeai as genai
 
 RULES_PATH = "rules/goyabu.json"
 
-# Cliente Gemini
-client = genai.Client(
+# Configura API Gemini
+genai.configure(
     api_key=os.getenv("GEMINI_API_KEY")
 )
+
+model = genai.GenerativeModel("gemini-3-pro-preview")
 
 SYSTEM_PROMPT = """
 Você é um analisador de HTML para web scraping.
@@ -20,7 +22,6 @@ NUNCA extraia nomes de filmes, animes ou episódios.
 NUNCA explique nada.
 Responda SOMENTE em JSON válido.
 """
-
 
 def analyze_and_update_rules(html, context):
     rules = load_json(RULES_PATH, default={})
