@@ -10,9 +10,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
 
-    env:
-      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-
     steps:
       # 1️⃣ Checkout do repositório
       - name: Checkout repository
@@ -30,8 +27,10 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      # 4️⃣ Rodar scraper
+      # 4️⃣ Rodar scraper (com GEMINI_API_KEY)
       - name: Run scraper
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
           python main.py
 
@@ -39,7 +38,6 @@ jobs:
       - name: Check for changes
         id: git-check
         run: |
-          git status --porcelain
           if [ -n "$(git status --porcelain)" ]; then
             echo "changed=true" >> $GITHUB_OUTPUT
           else
@@ -54,4 +52,4 @@ jobs:
           git config user.email "github-actions@github.com"
           git add data/goyabu_animes.json rules/goyabu.json
           git commit -m "🔄 Atualização automática do scraper"
-          git
+          git push
