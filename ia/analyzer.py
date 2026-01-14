@@ -2,13 +2,16 @@
 # -*- coding: utf-8 -*-
 
 import json
+import os
 from utils.storage import load_json, save_json
 from google import genai
 
 RULES_PATH = "rules/goyabu.json"
 
 # Cliente Gemini
-client = genai.Client()
+client = genai.Client(
+    api_key=os.getenv("GEMINI_API_KEY")
+)
 
 SYSTEM_PROMPT = """
 Você é um analisador de HTML para web scraping.
