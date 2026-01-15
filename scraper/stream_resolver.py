@@ -6,6 +6,7 @@ import requests
 from bs4 import BeautifulSoup
 
 from utils.storage import load_json
+from ia.trainer import training_cycle
 
 RULES_PATH = "rules/goyabu.json"
 
@@ -13,19 +14,16 @@ RULES_PATH = "rules/goyabu.json"
 class StreamResolver:
 
     def __init__(self):
-        self.ua = (
-            "Mozilla/5.0 (Linux; Android 10; Pixel 5) "
-            "AppleWebKit/537.36 (KHTML, like Gecko) "
-            "Chrome/120.0 Mobile Safari/537.36"
-        )
-
         self.session = requests.Session()
         self.session.headers.update({
-            "User-Agent": self.ua,
+            "User-Agent": (
+                "Mozilla/5.0 (Linux; Android 10) "
+                "AppleWebKit/537.36 Chrome/120.0"
+            ),
             "Referer": "https://goyabu.io/"
         })
 
-        self.rules = load_json(RULES_PATH)
+        self.rules = load_json(RULES_PATH, default={})
 
     def resolve(self, episode_url):
         try:
@@ -37,10 +35,10 @@ class StreamResolver:
         html = r.text
         soup = BeautifulSoup(html, "html.parser")
 
-        # 1️⃣ Botão criptografado (regra aprendida)
+        # 1️⃣ Botão aprendido
         btn_selector = self.rules.get(
             "player_button",
-            "button.player-tab[data-blogger-url-encrypted]"
+            "button[data-blogger-url-encrypted]"
         )
 
         btn = soup.select_one(btn_selector)
@@ -51,7 +49,7 @@ class StreamResolver:
                 if blogger:
                     return self._resolve_blogger(blogger)
 
-        # 2️⃣ Fallback regex
+        # 2️⃣ Regex fallback
         regex = self.rules.get(
             "blogger_regex",
             r'https://www\.blogger\.com/video\.g[^"]+'
@@ -61,11 +59,16 @@ class StreamResolver:
         if m:
             return self._resolve_blogger(m.group(0))
 
+        # ❌ Falhou → treina IA
+        training_cycle(
+            context="stream",
+            html=html,
+            rules_used=self.rules,
+            success=False
+        )
+
         return None
 
-    # ==========================
-    # BLOGGER → GOOGLEVIDEO
-    # ==========================
     def _resolve_blogger(self, blogger_url):
         try:
             r = self.session.get(blogger_url, timeout=20)
@@ -73,22 +76,13 @@ class StreamResolver:
         except Exception:
             return None
 
-        html = r.text
-
-        # 🔥 Extração simples (IA pode melhorar depois)
         m = re.search(
             r'(https://[^\s"]+googlevideo\.com/[^\s"]+)',
-            html
+            r.text
         )
 
-        if not m:
-            return None
+        return m.group(1) if m else None
 
-        return m.group(1)
-
-    # ==========================
-    # PLACEHOLDER (sua função real entra aqui)
-    # ==========================
     def _decrypt_blogger(self, encrypted):
-        # 👉 aqui você cola sua função real decrypt_blogger_url
+        # sua função real entra aqui
         return None
