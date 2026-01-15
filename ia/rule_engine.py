@@ -1,0 +1,69 @@
+# ia/rule_engine.py
+# -*- coding: utf-8 -*-
+
+from utils.storage import load_json, save_json
+from ia.memory import update_score, get_best_rules
+
+RULES_PATH = "rules/goyabu.json"
+
+
+# ======================================
+# 📥 Carrega regras atuais
+# ======================================
+def load_rules():
+    return load_json(RULES_PATH, default={})
+
+
+# ======================================
+# 🧠 Avalia novas regras
+# ======================================
+def evaluate_and_merge(context, new_rules, success=True):
+    """
+    Decide se novas regras devem substituir as atuais
+    baseado em score e histórico
+    """
+
+    rules = load_rules()
+    updated = False
+
+    for key, value in new_rules.items():
+        score_key = f"{context}:{key}"
+
+        # Atualiza score
+        update_score(score_key, success)
+
+        # Se a regra não existe, entra
+        if key not in rules:
+            rules[key] = value
+            updated = True
+            continue
+
+        # Se mudou o valor → comparar
+        if rules[key] != value:
+            rules[key] = value
+            updated = True
+
+    if updated:
+        save_json(RULES_PATH, rules)
+
+    return updated
+
+
+# ======================================
+# 🏆 Retorna regras confiáveis
+# ======================================
+def get_trusted_rules(context, min_score=1):
+    """
+    Retorna apenas regras que já funcionaram antes
+    """
+    best = get_best_rules(min_score)
+    rules = load_rules()
+
+    trusted = {}
+
+    for k, v in rules.items():
+        score_key = f"{context}:{k}"
+        if score_key in best:
+            trusted[k] = v
+
+    return trusted
