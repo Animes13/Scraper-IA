@@ -19,7 +19,7 @@ def get_anime_list(page=1):
     html = fetch_html(url)
 
     if not html or len(html) < 500:
-        print("[LIST] HTML inválido ou vazio")
+        print("[LIST] HTML inválido")
         return []
 
     soup = BeautifulSoup(html, "html.parser")
@@ -27,30 +27,25 @@ def get_anime_list(page=1):
     link_selector = rules.get("anime_link", "a[href]")
 
     cards = soup.select(card_selector)
-
-    # ===============================
-    # Se não encontrou, tenta IA
-    # ===============================
     ia_used = False
+
     if not cards:
         print("[LIST] Seletor falhou → acionando IA")
         old_rules = load_json(RULES_PATH, default={})
 
         clean_html = sanitize_html(html)
-        if analyze_and_update_rules(html, "anime_list"):
-            print("[LIST] Regras atualizadas pela IA")
+        ok = analyze_and_update_rules(clean_html, "anime_list")
+
+        if ok:
             ia_used = True
             rules = load_json(RULES_PATH, default={})
-            card_selector = rules.get("anime_card", "article")
-            link_selector = rules.get("anime_link", "a[href]")
             soup = BeautifulSoup(html, "html.parser")
-            cards = soup.select(card_selector)
+            cards = soup.select(rules.get("anime_card", "article"))
 
-        # ❌ IA não resolveu → rollback
         if not cards:
-            print("[LIST] IA falhou → revertendo regras")
+            print("[LIST] IA falhou → rollback")
             save_json(RULES_PATH, old_rules)
-            cards = soup.find_all("article")  # fallback final
+            return []
 
     animes = []
 
@@ -62,7 +57,7 @@ def get_anime_list(page=1):
         name = a.get_text(" ", strip=True)
         link = urljoin(BASE, a["href"])
 
-        if len(name) < 2 or not link.startswith("http"):
+        if len(name) < 2:
             continue
 
         animes.append({
