@@ -1,7 +1,7 @@
 # ia/trainer.py
 # -*- coding: utf-8 -*-
 
-from ia.memory import log_success, log_failure
+from ia.memory import register_success, register_failure
 from ia.rule_engine import evaluate_and_merge
 
 
@@ -12,9 +12,8 @@ def train_success(context, rules_used):
     """
     Chamar quando o scraper FUNCIONAR
     """
-    log_success(context, rules_used)
+    register_success(context, rules_used)
 
-    # Aumenta score das regras usadas
     evaluate_and_merge(
         context=context,
         new_rules=rules_used,
@@ -29,9 +28,8 @@ def train_failure(context, html, attempted_rules):
     """
     Chamar quando o scraper FALHAR
     """
-    log_failure(context, html, attempted_rules)
+    register_failure(context, reason="scraper_failed")
 
-    # Penaliza regras ruins
     evaluate_and_merge(
         context=context,
         new_rules=attempted_rules,
