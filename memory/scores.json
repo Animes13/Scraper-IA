@@ -1,1 +1,9 @@
-{}
+{
+  "stream:anime_card": -46639,
+  "stream:anime_link": -46639,
+  "stream:episode_js_key": -46639,
+  "stream:player_button": -46638,
+  "stream:blogger_regex": -46639,
+  "episode_list:player_button": 24,
+  "anime_list:player_button": 1
+}
