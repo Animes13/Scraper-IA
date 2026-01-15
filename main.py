@@ -11,40 +11,8 @@ from utils.sanitizer import sanitize_html
 from scraper.fetch import fetch_html
 from ia.analyzer import analyze_and_update_rules
 
-import os
-
 RULES_PATH = "rules/goyabu.json"
 DATA_PATH = "data/goyabu_animes.json"
-
-# 🔑 Lista de APIs Gemini (secret names do GitHub Actions)
-GEMINI_KEYS = [
-    "GEMINI_API_KEY_1",
-    "GEMINI_API_KEY_2",
-    "GEMINI_API_KEY_3",
-    "GEMINI_API_KEY_4",
-    "GEMINI_API_KEY_5",
-]
-
-
-def try_analyze_with_multiple_apis(html, context):
-    """
-    Tenta atualizar regras usando até 5 APIs Gemini diferentes.
-    Retorna True se alguma conseguir atualizar.
-    """
-    for key_name in GEMINI_KEYS:
-        api_key = os.getenv(key_name)
-        if not api_key:
-            continue
-
-        os.environ["GEMINI_API_KEY"] = api_key
-        print(f"[IA] Tentando com {key_name}...")
-
-        if analyze_and_update_rules(html, context):
-            print(f"[IA] Sucesso com {key_name}")
-            return True
-
-    print("[IA] Todas as APIs falharam")
-    return False
 
 
 def main():
@@ -68,7 +36,7 @@ def main():
             name = anime["name"]
             url = anime["url"]
 
-            print(f"  ▶ Anime: {name}")
+            print(f"\n▶ Anime: {name}")
 
             # ===============================
             # EPISÓDIOS
@@ -79,22 +47,20 @@ def main():
                 episodes = []
 
             if not episodes and not ia_used["episode_list"]:
-                print("    ❌ Episódios não encontrados → acionando IA")
+                print("  ❌ Episódios não encontrados → acionando IA")
 
                 old_rules = load_json(RULES_PATH, default={})
-
                 html = fetch_html(url)
-                clean = sanitize_html(html)
+                clean_html = sanitize_html(html)
 
-                ok = try_analyze_with_multiple_apis(html, "episode_list")
+                ok = analyze_and_update_rules(clean_html, "episode_list")
                 ia_used["episode_list"] = True
 
                 if ok:
                     episodes = get_episodes(url)
 
-                # ❌ IA não resolveu → rollback
                 if not episodes:
-                    print("    ⛔ IA falhou → revertendo regras")
+                    print("  ⛔ IA falhou → revertendo regras")
                     save_json(RULES_PATH, old_rules)
 
             if not episodes:
@@ -112,30 +78,29 @@ def main():
                 ep_num = str(ep["episode"])
                 ep_url = ep["url"]
 
-                print(f"    🎬 EP {ep_num}")
+                print(f"  🎬 EP {ep_num} - resolvendo stream...")
 
                 stream = resolver.resolve(ep_url)
 
                 if not stream and not ia_used["stream"]:
-                    print("      ❌ Stream falhou → acionando IA")
+                    print("     ❌ Stream falhou → acionando IA")
 
                     old_rules = load_json(RULES_PATH, default={})
-
                     html = fetch_html(ep_url)
-                    clean = sanitize_html(html)
+                    clean_html = sanitize_html(html)
 
-                    ok = try_analyze_with_multiple_apis(html, "stream")
+                    ok = analyze_and_update_rules(clean_html, "stream")
                     ia_used["stream"] = True
 
                     if ok:
                         stream = resolver.resolve(ep_url)
 
-                    # ❌ IA não resolveu → rollback
                     if not stream:
-                        print("      ⛔ IA falhou → revertendo regras")
+                        print("     ⛔ IA falhou → revertendo regras")
                         save_json(RULES_PATH, old_rules)
 
                 if stream:
+                    print(f"     ✅ Stream OK: {stream}")
                     anime_entry["episodes"][ep_num] = stream
 
             if anime_entry["episodes"]:
@@ -144,7 +109,7 @@ def main():
         page += 1
 
     save_json(DATA_PATH, final_data)
-    print(f"[MAIN] Finalizado. {len(final_data)} animes salvos.")
+    print(f"\n[MAIN] Finalizado. {len(final_data)} animes salvos.")
 
 
 if __name__ == "__main__":
