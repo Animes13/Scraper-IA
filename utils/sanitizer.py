@@ -4,8 +4,11 @@
 from bs4 import BeautifulSoup
 
 
-def sanitize_html(html):
-    soup = BeautifulSoup(html, "lxml")
+def sanitize_html(html: str) -> str:
+    """
+    Limpa HTML para análise da IA (remove ruído)
+    """
+    soup = BeautifulSoup(html, "html.parser")
 
     for tag in soup(["script", "style", "noscript", "iframe"]):
         tag.decompose()
