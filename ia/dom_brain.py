@@ -6,7 +6,7 @@ from collections import Counter
 import re
 
 
-def analyze_dom(html: str) -> dict:
+def analyze_dom(html: str, context: str = None) -> dict:
     """
     Analisa o DOM e retorna seletores CSS prováveis
     """
