@@ -6,7 +6,7 @@ import json
 from collections import Counter
 
 
-def analyze_js(html: str) -> dict:
+def analyze_js(html: str, context: str = None) -> dict:
     """
     Analisa JS embutido no HTML e tenta descobrir
     como os episódios estão definidos.
