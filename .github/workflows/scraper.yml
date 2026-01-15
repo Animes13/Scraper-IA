@@ -1,4 +1,4 @@
-name: Goyabu Scraper IA
+name: Goyabu Scraper IA 2.0
 
 on:
   workflow_dispatch:
@@ -28,14 +28,8 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      # 4️⃣ Rodar scraper com 5 APIs
-      - name: Run scraper
-        env:
-          GEMINI_API_KEY_1: ${{ secrets.GEMINI_API_KEY_1 }}
-          GEMINI_API_KEY_2: ${{ secrets.GEMINI_API_KEY_2 }}
-          GEMINI_API_KEY_3: ${{ secrets.GEMINI_API_KEY_3 }}
-          GEMINI_API_KEY_4: ${{ secrets.GEMINI_API_KEY_4 }}
-          GEMINI_API_KEY_5: ${{ secrets.GEMINI_API_KEY_5 }}
+      # 4️⃣ Rodar scraper + IA própria
+      - name: Run scraper with local IA
         run: |
           python main.py
 
@@ -44,9 +38,10 @@ jobs:
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
-          git add data/goyabu_animes.json rules/goyabu.json
+          git add data/goyabu_animes.json rules/goyabu.json memory/*.json
           if [ -n "$(git status --porcelain)" ]; then
-            git commit -m "🔄 Atualização automática do scraper"
+            git commit -m "🤖 Atualização automática (Scraper + IA própria)"
             git push
           else
             echo "Nenhuma mudança para commitar"
+          fi
