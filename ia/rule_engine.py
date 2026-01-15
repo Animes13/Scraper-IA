@@ -14,6 +14,32 @@ def load_rules():
     return load_json(RULES_PATH, default={})
 
 
+def decide_rules(context, current_rules, generated_rules):
+    """
+    Decide quais regras aceitar com base em score e histórico
+    """
+    trusted = get_trusted_rules(context)
+
+    final = {}
+
+    for k, v in generated_rules.items():
+        # Se nunca existiu → aceita
+        if k not in current_rules:
+            final[k] = v
+            continue
+
+        # Se já existe e é confiável → mantém
+        if k in trusted:
+            final[k] = current_rules[k]
+            continue
+
+        # Se mudou → aceita tentativa
+        if current_rules.get(k) != v:
+            final[k] = v
+
+    return final
+
+
 # ======================================
 # 🧠 Avalia novas regras
 # ======================================
