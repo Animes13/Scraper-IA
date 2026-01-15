@@ -11,44 +11,43 @@ RULES_PATH = "rules/goyabu.json"
 
 
 def analyze_and_update_rules(html, context):
-    """
-    Orquestrador da IA própria
-    context: episode_list | stream | anime_list
-    """
     print(f"[IA] Analisando contexto: {context}")
 
     current_rules = load_json(RULES_PATH, default={})
     generated_rules = {}
 
-    # 🧠 1. Analisa DOM
-    dom_rules = analyze_dom(html, context)
-    if dom_rules:
-        generated_rules.update(dom_rules)
+    # 🧠 DOM
+    dom_rules = analyze_dom(html)
+    generated_rules.update(dom_rules or {})
 
-    # 🧠 2. Analisa JavaScript
-    js_rules = analyze_js(html, context)
-    if js_rules:
-        generated_rules.update(js_rules)
+    # 🧠 JS
+    js_rules = analyze_js(html)
+    generated_rules.update(js_rules or {})
 
     if not generated_rules:
-        print("[IA] Nenhuma regra candidata encontrada")
+        print("[IA] Nenhuma regra candidata")
         training_cycle(context, html, current_rules, success=False)
         return False
 
-    # 🧠 3. Decide se as regras são boas
-    final_rules = decide_rules(context, current_rules, generated_rules)
+    # 🧠 Decisão com validação real
+    final_rules = decide_rules(
+        context=context,
+        current_rules=current_rules,
+        generated_rules=generated_rules,
+        html=html
+    )
 
     if not final_rules:
-        print("[IA] Regras rejeitadas pelo motor de decisão")
+        print("[IA] Regras rejeitadas")
         training_cycle(context, html, generated_rules, success=False)
         return False
 
-    # 💾 4. Salva regras
+    # 💾 Salva
     current_rules.update(final_rules)
     save_json(RULES_PATH, current_rules)
 
-    # 🎓 5. Treina por sucesso
+    # 🎓 Treina
     training_cycle(context, html, final_rules, success=True)
 
-    print("[IA] Regras atualizadas com sucesso:", final_rules)
+    print("[IA] Regras aplicadas:", final_rules)
     return True
