@@ -27,7 +27,7 @@ def extract_json(text):
     return json.loads(clean)
 
 # =============================
-# PLAYWRIGHT FETCH
+# PLAYWRIGHT FETCH COM SCROLL
 # =============================
 
 def fetch_html(url):
@@ -45,7 +45,7 @@ def fetch_html(url):
         page.goto(url, timeout=60000)
         page.wait_for_load_state("domcontentloaded")
 
-        # força JS do site
+        # força execução de JS (scroll para disparar carregamento)
         for _ in range(5):
             page.mouse.wheel(0, 3000)
             page.wait_for_timeout(1500)
@@ -95,29 +95,38 @@ HTML:
 """
 
 print("[IA] Analisando página do anime...")
-
 anime_response = client.models.generate_content(
     model=MODEL,
     contents=anime_prompt
 )
-
 anime_rules = extract_json(anime_response.text)
 
 # =============================
-# 2️⃣ ENTRAR NO 1º EPISÓDIO REAL
+# 2️⃣ DETECTAR PRIMEIRO EPISÓDIO VIA JS
 # =============================
 
 print("[STEP 2] Detectando primeiro episódio real...")
 
-match = re.search(r'https://goyabu\.io/(\d+)', anime_html)
-if not match:
-    raise RuntimeError("Nenhum link de episódio encontrado no HTML")
+# captura allEpisodes do JS
+m = re.search(r"const\s+allEpisodes\s*=\s*(\[[\s\S]*?\]);", anime_html)
+if not m:
+    raise RuntimeError("Variável allEpisodes não encontrada no HTML do anime")
 
-EP_URL = f"https://goyabu.io/{match.group(1)}"
-print(f"[OK] Episódio detectado: {EP_URL}")
+try:
+    eps = json.loads(m.group(1).replace("\\/", "/"))
+except Exception as e:
+    raise RuntimeError(f"Erro ao parsear allEpisodes: {e}")
+
+if not eps:
+    raise RuntimeError("Lista de episódios vazia")
+
+# ordena por número do episódio e pega o primeiro
+eps.sort(key=lambda e: int(e.get("episodio", 0)))
+first_id = eps[0]["id"]
+EP_URL = f"https://goyabu.io/{first_id}"
+print(f"[OK] Episódio detectado via JS: {EP_URL}")
 
 ep_html = fetch_html(EP_URL)
-
 if "<body" not in ep_html.lower():
     raise RuntimeError("HTML do episódio inválido")
 
@@ -154,12 +163,10 @@ HTML:
 """
 
 print("[IA] Analisando página do episódio...")
-
 ep_response = client.models.generate_content(
     model=MODEL,
     contents=episode_prompt
 )
-
 episode_rules = extract_json(ep_response.text)
 
 # =============================
