@@ -1,15 +1,16 @@
 import os
 import re
 import json
+import base64
+from urllib.parse import urljoin
 from playwright.sync_api import sync_playwright, TimeoutError
 from google import genai
-from urllib.parse import urljoin
 from bs4 import BeautifulSoup
-import base64
 
 # =============================
 # CONFIGURAÇÃO
 # =============================
+
 API_KEY = os.getenv("GEMINI_API_KEY")
 if not API_KEY:
     raise RuntimeError("GEMINI_API_KEY não definida")
@@ -18,27 +19,24 @@ ANIME_URL = "https://goyabu.io/anime/black-clover-dublado"
 client = genai.Client(api_key=API_KEY)
 MODEL = "models/gemini-2.5-flash"
 
+DATA_DIR = "data"
+RULES_DIR = "rules"
+os.makedirs(DATA_DIR, exist_ok=True)
+os.makedirs(RULES_DIR, exist_ok=True)
+
 # =============================
 # FUNÇÃO JSON SEGURO
 # =============================
+
 def extract_json(text):
     clean = re.sub(r"```(?:json)?", "", text, flags=re.IGNORECASE)
     clean = clean.strip("` \n\t")
     return json.loads(clean)
 
 # =============================
-# SALVAR HTML
-# =============================
-def save_html(html, filename):
-    os.makedirs("data", exist_ok=True)
-    path = os.path.join("data", filename)
-    with open(path, "w", encoding="utf-8") as f:
-        f.write(html)
-    print(f"[OK] HTML salvo em {path}")
-
-# =============================
 # FETCH HTML COM SCROLL
 # =============================
+
 def fetch_html(url, wait_selector=None, scroll_times=5):
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
@@ -68,12 +66,9 @@ def fetch_html(url, wait_selector=None, scroll_times=5):
 # =============================
 # DETECÇÃO DE LINKS DE EPISÓDIOS
 # =============================
+
 def extract_episode_links(html):
-    """
-    Tenta extrair links de episódios:
-    1) Primeiro, tenta container conhecido (CSS fixo)
-    2) Depois, fallback: qualquer link numérico no HTML
-    """
+    """Tenta detectar links de episódios do site"""
     soup = BeautifulSoup(html, "html.parser")
     container = soup.select_one(".episodes-grid") or soup.select_one("#episodes-container")
     links = []
@@ -84,15 +79,26 @@ def extract_episode_links(html):
             if re.match(r"https://goyabu\.io/\d+", href):
                 links.append(href)
     else:
-        # fallback: busca qualquer link numérico no HTML
-        links = re.findall(r"https://goyabu\.io/(\d+)", html)
-        links = [f"https://goyabu.io/{i}" for i in links]
+        # fallback: busca JS allEpisodes
+        m = re.search(r"const\s+allEpisodes\s*=\s*(\[[\s\S]*?\]);", html)
+        if m:
+            try:
+                eps = json.loads(m.group(1).replace("\\/", "/"))
+                eps.sort(key=lambda e: int(e.get("episodio", 0)))
+                links = [f"https://goyabu.io/{ep['id']}" for ep in eps]
+            except:
+                pass
+        # fallback genérico: qualquer link numérico
+        if not links:
+            ids = re.findall(r"https://goyabu\.io/(\d+)", html)
+            links = [f"https://goyabu.io/{i}" for i in ids]
 
-    return list(dict.fromkeys(links))  # remove duplicados
+    return list(dict.fromkeys(links))
 
 # =============================
 # FUNÇÕES DE AJUDA
 # =============================
+
 def decrypt_blogger_url(encrypted):
     try:
         if not encrypted:
@@ -136,28 +142,30 @@ def extract_blogger_googlevideo(html):
 # =============================
 # PASSO 1: PÁGINA DO ANIME
 # =============================
+
 anime_html = fetch_html(ANIME_URL)
-save_html(anime_html, "anime_black_clover.html")
+anime_slug = "black_clover"
+with open(f"{DATA_DIR}/anime_{anime_slug}.html", "w", encoding="utf-8") as f:
+    f.write(anime_html)
+print(f"[OK] HTML do anime salvo em {DATA_DIR}/anime_{anime_slug}.html")
 
 episode_links = extract_episode_links(anime_html)
 if not episode_links:
-    os.makedirs("memory/failures", exist_ok=True)
-    with open("memory/failures/anime.html", "w", encoding="utf-8") as f:
-        f.write(anime_html)
     raise RuntimeError("Nenhum link de episódio encontrado — HTML salvo para análise futura")
 
 first_ep_url = episode_links[0]
 print(f"[OK] Primeiro episódio detectado: {first_ep_url}")
 
 # =============================
-# IA – PÁGINA DO ANIME (ADAPTATIVO)
+# PASSO 2: IA ANALISA ANIME PAGE
 # =============================
+
 anime_prompt = f"""
 Responda apenas com JSON puro.
 Você é uma IA especialista em scraping adaptativo.
 
 Objetivo:
-- Detectar o container da lista de episódios
+- Detectar container da lista de episódios
 - Detectar link de cada episódio
 - Retornar null se não existir
 - Tente pensar onde os episódios estão, mesmo que o layout mude
@@ -166,17 +174,17 @@ HTML:
 {anime_html[:80000]}
 """
 
-anime_response = client.models.generate_content(
-    model=MODEL,
-    contents=anime_prompt
-)
+anime_response = client.models.generate_content(model=MODEL, contents=anime_prompt)
 anime_rules = extract_json(anime_response.text)
 
 # =============================
-# PASSO 2: PÁGINA DO EPISÓDIO
+# PASSO 3: PÁGINA DO PRIMEIRO EPISÓDIO
 # =============================
+
 ep_html = fetch_html(first_ep_url)
-save_html(ep_html, "episode_first.html")
+with open(f"{DATA_DIR}/episode_{anime_slug}.html", "w", encoding="utf-8") as f:
+    f.write(ep_html)
+print(f"[OK] HTML do episódio salvo em {DATA_DIR}/episode_{anime_slug}.html")
 
 episode_prompt = f"""
 Responda apenas com JSON puro.
@@ -193,25 +201,22 @@ HTML:
 {ep_html[:80000]}
 """
 
-ep_response = client.models.generate_content(
-    model=MODEL,
-    contents=episode_prompt
-)
+ep_response = client.models.generate_content(model=MODEL, contents=episode_prompt)
 episode_rules = extract_json(ep_response.text)
 
 # =============================
 # RESULTADO FINAL
 # =============================
+
 final_rules = {
     "anime_page": anime_rules,
     "episode_page": episode_rules,
     "episode_links_detected": episode_links
 }
 
-os.makedirs("rules", exist_ok=True)
-with open("rules/goyabu.json", "w", encoding="utf-8") as f:
+with open(f"{RULES_DIR}/goyabu.json", "w", encoding="utf-8") as f:
     json.dump(final_rules, f, indent=2, ensure_ascii=False)
 
 print("\n[IA] REGRAS FINAIS GERADAS:\n")
 print(json.dumps(final_rules, indent=2, ensure_ascii=False))
-print("\n[OK] Regras salvas em rules/goyabu.json")
+print(f"\n[OK] Regras salvas em {RULES_DIR}/goyabu.json")
