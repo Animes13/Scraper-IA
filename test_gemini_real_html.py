@@ -1,8 +1,8 @@
 import os
 import json
 import re
-import google.generativeai as genai
-from playwright.sync_api import sync_playwright
+from playwright.sync_api import sync_playwright, TimeoutError
+from google import genai
 
 # =============================
 # CONFIG
@@ -12,13 +12,13 @@ API_KEY = os.getenv("GEMINI_API_KEY")
 if not API_KEY:
     raise RuntimeError("GEMINI_API_KEY não definida")
 
-URL_TESTE = "https://goyabu.io/anime/odayaka-kizoku-no-kyuuka-no-susume"
+URL_TESTE = "https://goyabu.io/anime/black-clover-dublado"
 
-genai.configure(api_key=API_KEY)
-model = genai.GenerativeModel("gemini-2.5-flash")
+client = genai.Client(api_key=API_KEY)
+model = "models/gemini-2.5-flash"
 
 # =============================
-# FUNÇÃO: EXTRAI JSON DA IA
+# FUNÇÃO: EXTRAI JSON
 # =============================
 
 def extract_json(text):
@@ -27,7 +27,7 @@ def extract_json(text):
     return json.loads(clean)
 
 # =============================
-# 1️⃣ BAIXA HTML REAL (JS RENDERIZADO)
+# 1️⃣ BAIXA HTML REAL (JS COMPLETO)
 # =============================
 
 print("[TESTE] Abrindo navegador real (Playwright)...")
@@ -43,67 +43,74 @@ with sync_playwright() as p:
     )
 
     page.goto(URL_TESTE, timeout=60000)
-    page.wait_for_timeout(5000)
-    html = page.content()
 
+    try:
+        # ESPERA CONTEÚDO REAL (ajuste se necessário)
+        page.wait_for_selector("a", timeout=20000)
+        page.wait_for_timeout(3000)
+    except TimeoutError:
+        print("[WARN] Nenhum seletor esperado encontrado, usando HTML atual")
+
+    html = page.content()
     browser.close()
 
-print(f"[OK] HTML real capturado ({len(html)} chars)")
+print(f"[OK] HTML final capturado ({len(html)} chars)")
 
 # =============================
-# 2️⃣ PROMPT PROFISSIONAL
+# DEBUG OPCIONAL
+# =============================
+
+if "<body" not in html.lower():
+    raise RuntimeError("HTML inválido (sem body)")
+
+# =============================
+# 2️⃣ PROMPT IA (MELHORADO)
 # =============================
 
 prompt = f"""
-RESPONDA APENAS COM JSON PURO.
-NÃO use markdown.
-NÃO use ```json.
-NÃO escreva nada fora do JSON.
+Responda APENAS com JSON puro.
 
-Você é uma IA especialista em web scraping avançado.
+Você é uma IA especialista em scraping avançado.
+Analise o HTML FINAL abaixo (já renderizado por navegador real).
 
-Analise o HTML REAL abaixo de um site de anime.
-Seu objetivo é identificar informações IMPLÍCITAS, como um humano faria.
+Extraia informações MESMO QUE NÃO SEJAM ÓBVIAS.
 
-Retorne um JSON com EXATAMENTE estas chaves:
+Retorne EXATAMENTE estas chaves:
 
-episode_list
-episode_link
-player_button
-blogger_regex
-observacoes
+episode_list  -> seletor CSS do container de episódios
+episode_link  -> seletor CSS do link de cada episódio
+player_button -> seletor CSS do botão/link que leva ao player
+blogger_regex -> regex de URL Blogger (ou null)
+observacoes   -> explicação curta da lógica inferida
 
 HTML:
-{html[:30000]}
+{html[:40000]}
 """
 
 # =============================
-# 3️⃣ CHAMADA À IA
+# 3️⃣ IA
 # =============================
 
 print("[IA] Analisando HTML completo...")
 
-response = model.generate_content(prompt)
+response = client.models.generate_content(
+    model=model,
+    contents=prompt
+)
+
 text = response.text.strip()
 
 # =============================
 # 4️⃣ PARSE JSON
 # =============================
 
-try:
-    rules = extract_json(text)
-    print("\n[IA] Regras geradas com sucesso:\n")
-    print(json.dumps(rules, indent=2, ensure_ascii=False))
+rules = extract_json(text)
 
-    os.makedirs("rules", exist_ok=True)
-    with open("rules/goyabu.json", "w", encoding="utf-8") as f:
-        json.dump(rules, f, indent=2, ensure_ascii=False)
+print("\n[IA] Regras geradas com sucesso:\n")
+print(json.dumps(rules, indent=2, ensure_ascii=False))
 
-    print("\n[OK] Regras salvas em rules/goyabu.json")
+os.makedirs("rules", exist_ok=True)
+with open("rules/goyabu.json", "w", encoding="utf-8") as f:
+    json.dump(rules, f, indent=2, ensure_ascii=False)
 
-except Exception as e:
-    print("\n[ERRO] A IA não retornou JSON válido")
-    print("Erro:", e)
-    print("\nResposta bruta da IA:\n")
-    print(text)
-    raise
+print("\n[OK] Regras salvas em rules/goyabu.json")
