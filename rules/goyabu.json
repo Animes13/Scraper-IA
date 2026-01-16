@@ -1,7 +1,7 @@
 {
-  "anime_card": "article",
-  "anime_link": "a[href]",
-  "episode_js_key": "const allEpisodes",
-  "player_button": "button.player-tab[data-blogger-url-encrypted]",
-  "blogger_regex": "https://www\\.blogger\\.com/video\\.g[^\"']+"
+  "episode_list": null,
+  "episode_link": null,
+  "player_button": null,
+  "blogger_regex": null,
+  "observacoes": "O HTML fornecido parece ser apenas o cabeçalho (<head>) e alguns estilos iniciais do <body>, não contendo o corpo principal da página onde a lista de episódios ou um botão de player seriam encontrados. A presença de 'goyabu.io/wp-content/themes/cronos-design/' nas tags <link> sugere fortemente que este é um site WordPress e não um blog Blogger/Blogspot."
 }
