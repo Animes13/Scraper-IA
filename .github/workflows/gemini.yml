@@ -10,26 +10,31 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # ✅ Passo 1: Clonar o repositório
       - name: Checkout
         uses: actions/checkout@v4
 
+      # ✅ Passo 2: Configurar Python
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
+      # ✅ Passo 3: Instalar dependências
       - name: Install dependencies
         run: |
-          pip install --upgrade pip
-          pip install google-genai playwright
+          python -m pip install --upgrade pip
+          pip install beautifulsoup4 requests playwright google-genai
           playwright install chromium
 
+      # ✅ Passo 4: Rodar o scraper
       - name: Run scraper
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
           python test_gemini_real_html.py
 
+      # ✅ Passo 5: Commit automático das regras geradas
       - name: Commit rules
         run: |
           git config user.name "github-actions"
