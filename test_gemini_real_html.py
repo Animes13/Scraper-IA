@@ -1,11 +1,14 @@
 import os
-import json
 import re
+import json
 from playwright.sync_api import sync_playwright, TimeoutError
 from google import genai
+from urllib.parse import urljoin
+from bs4 import BeautifulSoup
+import base64
 
 # =============================
-# CONFIG
+# CONFIGURAÇÃO
 # =============================
 
 API_KEY = os.getenv("GEMINI_API_KEY")
@@ -17,17 +20,19 @@ client = genai.Client(api_key=API_KEY)
 MODEL = "models/gemini-2.5-flash"
 
 # =============================
-# JSON SAFE PARSER
+# FUNÇÃO JSON SEGURO
 # =============================
+
 def extract_json(text):
     clean = re.sub(r"```(?:json)?", "", text, flags=re.IGNORECASE)
     clean = clean.strip("` \n\t")
     return json.loads(clean)
 
 # =============================
-# PLAYWRIGHT FETCH COM SCROLL
+# FETCH HTML COM SCROLL
 # =============================
-def fetch_html(url):
+
+def fetch_html(url, wait_selector=None, scroll_times=5):
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
         page = browser.new_page(
@@ -40,10 +45,15 @@ def fetch_html(url):
 
         print(f"[PLAYWRIGHT] Abrindo: {url}")
         page.goto(url, timeout=60000)
-        page.wait_for_load_state("domcontentloaded")
 
-        # força execução de JS (scroll para disparar carregamento)
-        for _ in range(5):
+        if wait_selector:
+            try:
+                page.wait_for_selector(wait_selector, timeout=30000)
+            except TimeoutError:
+                print(f"[WARN] Seletor {wait_selector} não encontrado")
+
+        # scroll para disparar carregamento dinâmico
+        for _ in range(scroll_times):
             page.mouse.wheel(0, 3000)
             page.wait_for_timeout(1500)
 
@@ -52,45 +62,98 @@ def fetch_html(url):
         return html
 
 # =============================
-# 1️⃣ ANIME PAGE
+# EXTRAI LINKS DE EPISÓDIOS
 # =============================
-print("[STEP 1] Capturando página do anime...")
-anime_html = fetch_html(ANIME_URL)
 
-if "<body" not in anime_html.lower():
-    raise RuntimeError("HTML do anime inválido")
+def extract_episode_links(html):
+    links = re.findall(r"https://goyabu\.io/(\d+)", html)
+    return list(dict.fromkeys(links))  # remove duplicados
 
 # =============================
-# IA – ANIME PAGE
+# FUNÇÕES DE AJUDA DO ADDON
 # =============================
+
+def decrypt_blogger_url(encrypted):
+    try:
+        if not encrypted:
+            return None
+        encrypted = encrypted.strip()
+        missing = len(encrypted) % 4
+        if missing:
+            encrypted += "=" * (4 - missing)
+        decoded = base64.b64decode(encrypted).decode("utf-8", errors="ignore")
+        return decoded[::-1].strip() if decoded.startswith("http") else None
+    except:
+        return None
+
+def extract_blogger_googlevideo(html):
+    try:
+        if not html:
+            return None
+        m = re.search(r'VIDEO_CONFIG\s*=\s*({.*?});', html, re.DOTALL)
+        if m:
+            data = json.loads(m.group(1))
+            streams = data.get("streams", [])
+            if streams:
+                streams.sort(key=lambda x: int(x.get("format_id", 0)), reverse=True)
+                return streams[0].get("play_url") or streams[0].get("url")
+        m = re.search(r'ytInitialPlayerResponse\s*=\s*({.*?});', html, re.DOTALL)
+        if m:
+            data = json.loads(m.group(1))
+            formats = (data.get("streamingData", {}).get("formats", []) +
+                       data.get("streamingData", {}).get("adaptiveFormats", []))
+            for f in formats:
+                url = f.get("url")
+                if url and "googlevideo.com" in url:
+                    return url
+        m = re.search(r'(https://[^"\']+googlevideo\.com/videoplayback[^"\']+)', html)
+        if m:
+            return m.group(1)
+        return None
+    except:
+        return None
+
+# =============================
+# PASSO 1: PÁGINA DO ANIME
+# =============================
+
+anime_html = fetch_html(ANIME_URL, wait_selector=".episodes-grid")
+episode_ids = extract_episode_links(anime_html)
+
+if not episode_ids:
+    raise RuntimeError("Nenhum link de episódio encontrado")
+
+first_ep_url = f"https://goyabu.io/{episode_ids[0]}"
+print(f"[OK] Primeiro episódio detectado: {first_ep_url}")
+
+# =============================
+# IA ANALISA ANIME PAGE
+# =============================
+
 anime_prompt = f"""
 Responda APENAS com JSON puro.
 
 Você está analisando a PÁGINA DO ANIME do site goyabu.io.
-
 Objetivo:
-- Identificar onde está a LISTA de episódios
-- Identificar o LINK individual de cada episódio
+- Identificar o container da lista de episódios
+- Identificar link de cada episódio
 
 REGRAS:
 - Use SOMENTE elementos presentes no HTML
-- Episódios possuem URLs numéricas (ex: /37475)
-- NÃO invente seletores
-- Se não houver lista ou links detectáveis, retorne null e explique
+- URLs de episódios são numéricas (ex: /37475)
+- Retorne null se não existir
 
 JSON esperado:
-
 {{
   "episode_list": "CSS selector ou null",
   "episode_link": "CSS selector ou null",
-  "observacoes": "curta explicação"
+  "observacoes": "explicação curta"
 }}
 
 HTML:
 {anime_html[:50000]}
 """
 
-print("[IA] Analisando página do anime...")
 anime_response = client.models.generate_content(
     model=MODEL,
     contents=anime_prompt
@@ -98,61 +161,24 @@ anime_response = client.models.generate_content(
 anime_rules = extract_json(anime_response.text)
 
 # =============================
-# 2️⃣ DETECTAR PRIMEIRO EPISÓDIO (IA fallback)
+# PASSO 2: PÁGINA DO EPISÓDIO
 # =============================
-print("[STEP 2] Detectando primeiro episódio real...")
 
-# tenta extrair via JS first (allEpisodes)
-m = re.search(r"const\s+allEpisodes\s*=\s*(\[[\s\S]*?\]);", anime_html)
-first_id = None
-
-if m:
-    try:
-        eps = json.loads(m.group(1).replace("\\/", "/"))
-        if eps:
-            eps.sort(key=lambda e: int(e.get("episodio", 0)))
-            first_id = eps[0]["id"]
-            print(f"[OK] Episódio detectado via JS: {first_id}")
-    except Exception as e:
-        print(f"[WARN] Falha ao parsear allEpisodes: {e}")
-
-# fallback: detectar link numérico diretamente do HTML
-if not first_id:
-    match = re.search(r'https://goyabu\.io/(\d+)', anime_html)
-    if match:
-        first_id = match.group(1)
-        print(f"[OK] Episódio detectado via HTML: {first_id}")
-
-if not first_id:
-    raise RuntimeError("Nenhum link de episódio encontrado no HTML do anime")
-
-EP_URL = f"https://goyabu.io/{first_id}"
-ep_html = fetch_html(EP_URL)
-
-if "<body" not in ep_html.lower():
-    raise RuntimeError("HTML do episódio inválido")
-
-# =============================
-# IA – EPISODE PAGE
-# =============================
+ep_html = fetch_html(first_ep_url)
 episode_prompt = f"""
 Responda APENAS com JSON puro.
 
 Você está analisando a PÁGINA DO EPISÓDIO do site goyabu.io.
-
 Objetivo:
-- Detectar botão ou ação que leva ao player
+- Detectar botão do player
 - Detectar iframe do player
-- Detectar URL Blogger (direta ou indireta)
+- Detectar URL Blogger
 
 IMPORTANTE:
-- Blogger pode estar em iframe, script JS ou atributo data-src
-- NÃO invente dados
-- Use null se não existir
-- Explique no campo observacoes como detectou cada elemento
+- Blogger pode estar em iframe, script JS ou data-src
+- Retorne null se não existir
 
 JSON esperado:
-
 {{
   "player_button": "CSS selector ou null",
   "iframe_selector": "CSS selector ou null",
@@ -164,7 +190,6 @@ HTML:
 {ep_html[:50000]}
 """
 
-print("[IA] Analisando página do episódio...")
 ep_response = client.models.generate_content(
     model=MODEL,
     contents=episode_prompt
@@ -172,8 +197,9 @@ ep_response = client.models.generate_content(
 episode_rules = extract_json(ep_response.text)
 
 # =============================
-# 3️⃣ RESULTADO FINAL
+# RESULTADO FINAL
 # =============================
+
 final_rules = {
     "anime_page": anime_rules,
     "episode_page": episode_rules
