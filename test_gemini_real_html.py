@@ -66,11 +66,24 @@ def fetch_html(url, wait_selector=None, scroll_times=5):
 # =============================
 
 def extract_episode_links(html):
-    links = re.findall(r"https://goyabu\.io/(\d+)", html)
+    soup = BeautifulSoup(html, "html.parser")
+    container = soup.select_one(".episodes-grid") or soup.select_one("#episodes-container")
+    links = []
+
+    if container:
+        for a in container.select("a[href]"):
+            href = a["href"]
+            if re.match(r"https://goyabu\.io/\d+", href):
+                links.append(href)
+    else:
+        # fallback: busca qualquer link numérico no HTML
+        links = re.findall(r"https://goyabu\.io/(\d+)", html)
+        links = [f"https://goyabu.io/{i}" for i in links]
+
     return list(dict.fromkeys(links))  # remove duplicados
 
 # =============================
-# FUNÇÕES DE AJUDA DO ADDON
+# FUNÇÕES DE AJUDA
 # =============================
 
 def decrypt_blogger_url(encrypted):
@@ -118,12 +131,16 @@ def extract_blogger_googlevideo(html):
 # =============================
 
 anime_html = fetch_html(ANIME_URL, wait_selector=".episodes-grid")
-episode_ids = extract_episode_links(anime_html)
+episode_links = extract_episode_links(anime_html)
 
-if not episode_ids:
-    raise RuntimeError("Nenhum link de episódio encontrado")
+if not episode_links:
+    # salva HTML para IA aprender se o site mudar
+    os.makedirs("memory/failures", exist_ok=True)
+    with open("memory/failures/anime.html", "w", encoding="utf-8") as f:
+        f.write(anime_html)
+    raise RuntimeError("Nenhum link de episódio encontrado — HTML salvo para análise futura")
 
-first_ep_url = f"https://goyabu.io/{episode_ids[0]}"
+first_ep_url = episode_links[0]
 print(f"[OK] Primeiro episódio detectado: {first_ep_url}")
 
 # =============================
@@ -131,24 +148,13 @@ print(f"[OK] Primeiro episódio detectado: {first_ep_url}")
 # =============================
 
 anime_prompt = f"""
-Responda APENAS com JSON puro.
+Responda apenas com JSON puro.
+Você é uma IA especialista em scraping adaptativo.
 
-Você está analisando a PÁGINA DO ANIME do site goyabu.io.
 Objetivo:
-- Identificar o container da lista de episódios
-- Identificar link de cada episódio
-
-REGRAS:
-- Use SOMENTE elementos presentes no HTML
-- URLs de episódios são numéricas (ex: /37475)
-- Retorne null se não existir
-
-JSON esperado:
-{{
-  "episode_list": "CSS selector ou null",
-  "episode_link": "CSS selector ou null",
-  "observacoes": "explicação curta"
-}}
+- Detectar o container da lista de episódios
+- Detectar link de cada episódio
+- Retornar null se não existir
 
 HTML:
 {anime_html[:50000]}
@@ -166,25 +172,14 @@ anime_rules = extract_json(anime_response.text)
 
 ep_html = fetch_html(first_ep_url)
 episode_prompt = f"""
-Responda APENAS com JSON puro.
+Responda apenas com JSON puro.
+Você é uma IA especialista em scraping adaptativo.
 
-Você está analisando a PÁGINA DO EPISÓDIO do site goyabu.io.
 Objetivo:
 - Detectar botão do player
 - Detectar iframe do player
 - Detectar URL Blogger
-
-IMPORTANTE:
-- Blogger pode estar em iframe, script JS ou data-src
-- Retorne null se não existir
-
-JSON esperado:
-{{
-  "player_button": "CSS selector ou null",
-  "iframe_selector": "CSS selector ou null",
-  "blogger_regex": "regex ou null",
-  "observacoes": "explicação curta"
-}}
+- Retornar null se não existir
 
 HTML:
 {ep_html[:50000]}
@@ -202,14 +197,14 @@ episode_rules = extract_json(ep_response.text)
 
 final_rules = {
     "anime_page": anime_rules,
-    "episode_page": episode_rules
+    "episode_page": episode_rules,
+    "episode_links_detected": episode_links
 }
-
-print("\n[IA] REGRAS FINAIS GERADAS:\n")
-print(json.dumps(final_rules, indent=2, ensure_ascii=False))
 
 os.makedirs("rules", exist_ok=True)
 with open("rules/goyabu.json", "w", encoding="utf-8") as f:
     json.dump(final_rules, f, indent=2, ensure_ascii=False)
 
+print("\n[IA] REGRAS FINAIS GERADAS:\n")
+print(json.dumps(final_rules, indent=2, ensure_ascii=False))
 print("\n[OK] Regras salvas em rules/goyabu.json")
