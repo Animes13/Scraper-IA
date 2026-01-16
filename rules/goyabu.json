@@ -1,7 +1,7 @@
 {
-  "episode_list": null,
-  "episode_link": null,
-  "player_button": null,
+  "episode_list": ".episodes-grid",
+  "episode_link": ".boxEP a",
+  "player_button": "a.btn-principal",
   "blogger_regex": null,
-  "observacoes": "O HTML fornecido parece ser apenas o cabeçalho (<head>) e alguns estilos iniciais do <body>, não contendo o corpo principal da página onde a lista de episódios ou um botão de player seriam encontrados. A presença de 'goyabu.io/wp-content/themes/cronos-design/' nas tags <link> sugere fortemente que este é um site WordPress e não um blog Blogger/Blogspot."
+  "observacoes": "As informações foram inferidas a partir das definições de classes CSS, pois o HTML fornecido é apenas a seção <head>. `episode_list` é inferido de classes de layout como `.episodes-grid` para o container. `episode_link` é presumido como um link `<a>` dentro de cada item de episódio (`.boxEP`). `player_button` é inferido como um link com o estilo de botão primário (`.btn-principal`), comum para ações como 'assistir' em páginas de player. Nenhuma referência ao Blogger foi encontrada."
 }
