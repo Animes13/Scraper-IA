@@ -21,7 +21,7 @@ MODEL = "models/gemini-2.5-flash"
 
 DATA_DIR = "data"
 RULES_DIR = "rules"
-os.makedirs(DATA_DIR, exist_ok=True)
+os.makedirs(DATA_DIR, exist_ok=True)  # garante que a pasta exista
 os.makedirs(RULES_DIR, exist_ok=True)
 
 # =============================
@@ -68,7 +68,6 @@ def fetch_html(url, wait_selector=None, scroll_times=5):
 # =============================
 
 def extract_episode_links(html):
-    """Tenta detectar links de episódios do site"""
     soup = BeautifulSoup(html, "html.parser")
     container = soup.select_one(".episodes-grid") or soup.select_one("#episodes-container")
     links = []
@@ -79,7 +78,7 @@ def extract_episode_links(html):
             if re.match(r"https://goyabu\.io/\d+", href):
                 links.append(href)
     else:
-        # fallback: busca JS allEpisodes
+        # fallback JS allEpisodes
         m = re.search(r"const\s+allEpisodes\s*=\s*(\[[\s\S]*?\]);", html)
         if m:
             try:
@@ -88,7 +87,7 @@ def extract_episode_links(html):
                 links = [f"https://goyabu.io/{ep['id']}" for ep in eps]
             except:
                 pass
-        # fallback genérico: qualquer link numérico
+        # fallback genérico
         if not links:
             ids = re.findall(r"https://goyabu\.io/(\d+)", html)
             links = [f"https://goyabu.io/{i}" for i in ids]
@@ -96,70 +95,33 @@ def extract_episode_links(html):
     return list(dict.fromkeys(links))
 
 # =============================
-# FUNÇÕES DE AJUDA
+# SALVA HTML
 # =============================
 
-def decrypt_blogger_url(encrypted):
-    try:
-        if not encrypted:
-            return None
-        encrypted = encrypted.strip()
-        missing = len(encrypted) % 4
-        if missing:
-            encrypted += "=" * (4 - missing)
-        decoded = base64.b64decode(encrypted).decode("utf-8", errors="ignore")
-        return decoded[::-1].strip() if decoded.startswith("http") else None
-    except:
-        return None
-
-def extract_blogger_googlevideo(html):
-    try:
-        if not html:
-            return None
-        m = re.search(r'VIDEO_CONFIG\s*=\s*({.*?});', html, re.DOTALL)
-        if m:
-            data = json.loads(m.group(1))
-            streams = data.get("streams", [])
-            if streams:
-                streams.sort(key=lambda x: int(x.get("format_id", 0)), reverse=True)
-                return streams[0].get("play_url") or streams[0].get("url")
-        m = re.search(r'ytInitialPlayerResponse\s*=\s*({.*?});', html, re.DOTALL)
-        if m:
-            data = json.loads(m.group(1))
-            formats = (data.get("streamingData", {}).get("formats", []) +
-                       data.get("streamingData", {}).get("adaptiveFormats", []))
-            for f in formats:
-                url = f.get("url")
-                if url and "googlevideo.com" in url:
-                    return url
-        m = re.search(r'(https://[^"\']+googlevideo\.com/videoplayback[^"\']+)', html)
-        if m:
-            return m.group(1)
-        return None
-    except:
-        return None
+def save_html(html, filename):
+    filepath = os.path.join(DATA_DIR, filename)
+    with open(filepath, "w", encoding="utf-8") as f:
+        f.write(html)
+    print(f"[OK] HTML salvo em {filepath}")
 
 # =============================
-# PASSO 1: PÁGINA DO ANIME
+# EXECUÇÃO PRINCIPAL
 # =============================
 
-anime_html = fetch_html(ANIME_URL)
 anime_slug = "black_clover"
-with open(f"{DATA_DIR}/anime_{anime_slug}.html", "w", encoding="utf-8") as f:
-    f.write(anime_html)
-print(f"[OK] HTML do anime salvo em {DATA_DIR}/anime_{anime_slug}.html")
+
+# 1️⃣ Página do anime
+anime_html = fetch_html(ANIME_URL)
+save_html(anime_html, f"anime_{anime_slug}.html")
 
 episode_links = extract_episode_links(anime_html)
 if not episode_links:
-    raise RuntimeError("Nenhum link de episódio encontrado — HTML salvo para análise futura")
+    raise RuntimeError("Nenhum link de episódio encontrado — HTML já salvo na pasta data")
 
 first_ep_url = episode_links[0]
 print(f"[OK] Primeiro episódio detectado: {first_ep_url}")
 
-# =============================
-# PASSO 2: IA ANALISA ANIME PAGE
-# =============================
-
+# 2️⃣ IA analisa página do anime
 anime_prompt = f"""
 Responda apenas com JSON puro.
 Você é uma IA especialista em scraping adaptativo.
@@ -177,14 +139,9 @@ HTML:
 anime_response = client.models.generate_content(model=MODEL, contents=anime_prompt)
 anime_rules = extract_json(anime_response.text)
 
-# =============================
-# PASSO 3: PÁGINA DO PRIMEIRO EPISÓDIO
-# =============================
-
+# 3️⃣ Página do primeiro episódio
 ep_html = fetch_html(first_ep_url)
-with open(f"{DATA_DIR}/episode_{anime_slug}.html", "w", encoding="utf-8") as f:
-    f.write(ep_html)
-print(f"[OK] HTML do episódio salvo em {DATA_DIR}/episode_{anime_slug}.html")
+save_html(ep_html, f"episode_{anime_slug}.html")
 
 episode_prompt = f"""
 Responda apenas com JSON puro.
@@ -204,10 +161,7 @@ HTML:
 ep_response = client.models.generate_content(model=MODEL, contents=episode_prompt)
 episode_rules = extract_json(ep_response.text)
 
-# =============================
-# RESULTADO FINAL
-# =============================
-
+# 4️⃣ Resultado final
 final_rules = {
     "anime_page": anime_rules,
     "episode_page": episode_rules,
