@@ -18,7 +18,7 @@ client = genai.Client(api_key=API_KEY)
 model = "models/gemini-2.5-flash"
 
 # =============================
-# FUNÇÃO: EXTRAI JSON
+# FUNÇÃO: EXTRAI JSON SEGURO
 # =============================
 
 def extract_json(text):
@@ -27,7 +27,7 @@ def extract_json(text):
     return json.loads(clean)
 
 # =============================
-# 1️⃣ BAIXA HTML REAL (JS COMPLETO)
+# 1️⃣ BAIXA HTML REAL
 # =============================
 
 print("[TESTE] Abrindo navegador real (Playwright)...")
@@ -45,50 +45,59 @@ with sync_playwright() as p:
     page.goto(URL_TESTE, timeout=60000)
 
     try:
-        # ESPERA CONTEÚDO REAL (ajuste se necessário)
-        page.wait_for_selector("a", timeout=20000)
+        page.wait_for_load_state("networkidle", timeout=30000)
         page.wait_for_timeout(3000)
     except TimeoutError:
-        print("[WARN] Nenhum seletor esperado encontrado, usando HTML atual")
+        print("[WARN] Página pode não ter carregado tudo")
 
     html = page.content()
     browser.close()
 
 print(f"[OK] HTML final capturado ({len(html)} chars)")
 
-# =============================
-# DEBUG OPCIONAL
-# =============================
-
 if "<body" not in html.lower():
-    raise RuntimeError("HTML inválido (sem body)")
+    raise RuntimeError("HTML inválido")
 
 # =============================
-# 2️⃣ PROMPT IA (MELHORADO)
+# 2️⃣ PROMPT IA (AVANÇADO)
 # =============================
 
 prompt = f"""
-Responda APENAS com JSON puro.
+Responda APENAS com JSON puro, sem markdown.
 
-Você é uma IA especialista em scraping avançado.
-Analise o HTML FINAL abaixo, que CONTÉM <head> E <body> completos,
-renderizado por um navegador real com JavaScript executado.
+Você é uma IA especialista em scraping adaptativo e sites de anime.
 
-NÃO presuma ausência de conteúdo.
-Baseie-se EXCLUSIVAMENTE nos elementos realmente presentes no HTML.
+O site analisado (goyabu.io) possui DUAS ETAPAS:
+1) Página do anime → lista de episódios
+2) Página do episódio (/37475) → player real (Blogger)
 
-Extraia informações MESMO QUE NÃO SEJAM ÓBVIAS.
+Analise o HTML FINAL abaixo (renderizado com JavaScript).
 
-Retorne EXATAMENTE estas chaves:
+REGRAS IMPORTANTES:
+- NÃO invente seletores
+- Use SOMENTE elementos realmente existentes
+- Se algo não existir, retorne null
+- Detecte links de episódio por IDs numéricos (/\\d+)
+- Detecte player por botão, iframe ou JS
+- Blogger pode estar em iframe, data-src ou script JS
 
-episode_list  -> seletor CSS do container de episódios
-episode_link  -> seletor CSS do link de cada episódio
-player_button -> seletor CSS do botão/link que leva ao player
-blogger_regex -> regex de URL Blogger (ou null)
-observacoes   -> explicação curta da lógica inferida
+Retorne EXATAMENTE este JSON:
 
-HTML:
-{html[:40000]}
+{{
+  "anime_page": {{
+    "episode_list": "CSS selector ou null",
+    "episode_link": "CSS selector ou null"
+  }},
+  "episode_page": {{
+    "player_button": "CSS selector ou null",
+    "iframe_selector": "CSS selector ou null",
+    "blogger_regex": "regex ou null"
+  }},
+  "observacoes": "explicação curta e objetiva"
+}}
+
+HTML (parcial):
+{html[:45000]}
 """
 
 # =============================
@@ -102,13 +111,11 @@ response = client.models.generate_content(
     contents=prompt
 )
 
-text = response.text.strip()
+rules = extract_json(response.text)
 
 # =============================
-# 4️⃣ PARSE JSON
+# 4️⃣ SALVAR
 # =============================
-
-rules = extract_json(text)
 
 print("\n[IA] Regras geradas com sucesso:\n")
 print(json.dumps(rules, indent=2, ensure_ascii=False))
