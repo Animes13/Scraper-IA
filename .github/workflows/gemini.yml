@@ -1,0 +1,39 @@
+name: Gemini Scraper IA
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 */12 * * *"
+
+jobs:
+  scraper:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install google-generativeai playwright
+          playwright install chromium
+
+      - name: Run scraper
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          python test_gemini_real_html.py
+
+      - name: Commit rules
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add rules/goyabu.json
+          git commit -m "Atualização automática de regras (Gemini IA)" || echo "Sem alterações"
+          git push
