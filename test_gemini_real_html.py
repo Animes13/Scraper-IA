@@ -10,7 +10,6 @@ import base64
 # =============================
 # CONFIGURAÇÃO
 # =============================
-
 API_KEY = os.getenv("GEMINI_API_KEY")
 if not API_KEY:
     raise RuntimeError("GEMINI_API_KEY não definida")
@@ -22,16 +21,24 @@ MODEL = "models/gemini-2.5-flash"
 # =============================
 # FUNÇÃO JSON SEGURO
 # =============================
-
 def extract_json(text):
     clean = re.sub(r"```(?:json)?", "", text, flags=re.IGNORECASE)
     clean = clean.strip("` \n\t")
     return json.loads(clean)
 
 # =============================
+# SALVAR HTML
+# =============================
+def save_html(html, filename):
+    os.makedirs("data", exist_ok=True)
+    path = os.path.join("data", filename)
+    with open(path, "w", encoding="utf-8") as f:
+        f.write(html)
+    print(f"[OK] HTML salvo em {path}")
+
+# =============================
 # FETCH HTML COM SCROLL
 # =============================
-
 def fetch_html(url, wait_selector=None, scroll_times=5):
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
@@ -50,7 +57,6 @@ def fetch_html(url, wait_selector=None, scroll_times=5):
             except TimeoutError:
                 print(f"[WARN] Seletor {wait_selector} não encontrado")
 
-        # scroll para disparar carregamento dinâmico
         for _ in range(scroll_times):
             page.mouse.wheel(0, 3000)
             page.wait_for_timeout(1500)
@@ -62,7 +68,6 @@ def fetch_html(url, wait_selector=None, scroll_times=5):
 # =============================
 # DETECÇÃO DE LINKS DE EPISÓDIOS
 # =============================
-
 def extract_episode_links(html):
     """
     Tenta extrair links de episódios:
@@ -88,7 +93,6 @@ def extract_episode_links(html):
 # =============================
 # FUNÇÕES DE AJUDA
 # =============================
-
 def decrypt_blogger_url(encrypted):
     try:
         if not encrypted:
@@ -106,7 +110,6 @@ def extract_blogger_googlevideo(html):
     try:
         if not html:
             return None
-        # VIDEO_CONFIG antigo
         m = re.search(r'VIDEO_CONFIG\s*=\s*({.*?});', html, re.DOTALL)
         if m:
             data = json.loads(m.group(1))
@@ -114,7 +117,6 @@ def extract_blogger_googlevideo(html):
             if streams:
                 streams.sort(key=lambda x: int(x.get("format_id", 0)), reverse=True)
                 return streams[0].get("play_url") or streams[0].get("url")
-        # ytInitialPlayerResponse novo
         m = re.search(r'ytInitialPlayerResponse\s*=\s*({.*?});', html, re.DOTALL)
         if m:
             data = json.loads(m.group(1))
@@ -124,7 +126,6 @@ def extract_blogger_googlevideo(html):
                 url = f.get("url")
                 if url and "googlevideo.com" in url:
                     return url
-        # fallback regex direto
         m = re.search(r'(https://[^"\']+googlevideo\.com/videoplayback[^"\']+)', html)
         if m:
             return m.group(1)
@@ -135,12 +136,11 @@ def extract_blogger_googlevideo(html):
 # =============================
 # PASSO 1: PÁGINA DO ANIME
 # =============================
-
 anime_html = fetch_html(ANIME_URL)
-episode_links = extract_episode_links(anime_html)
+save_html(anime_html, "anime_black_clover.html")
 
+episode_links = extract_episode_links(anime_html)
 if not episode_links:
-    # salva HTML para IA aprender se o site mudar
     os.makedirs("memory/failures", exist_ok=True)
     with open("memory/failures/anime.html", "w", encoding="utf-8") as f:
         f.write(anime_html)
@@ -152,7 +152,6 @@ print(f"[OK] Primeiro episódio detectado: {first_ep_url}")
 # =============================
 # IA – PÁGINA DO ANIME (ADAPTATIVO)
 # =============================
-
 anime_prompt = f"""
 Responda apenas com JSON puro.
 Você é uma IA especialista em scraping adaptativo.
@@ -176,8 +175,9 @@ anime_rules = extract_json(anime_response.text)
 # =============================
 # PASSO 2: PÁGINA DO EPISÓDIO
 # =============================
-
 ep_html = fetch_html(first_ep_url)
+save_html(ep_html, "episode_first.html")
+
 episode_prompt = f"""
 Responda apenas com JSON puro.
 Você é uma IA especialista em scraping adaptativo.
@@ -202,7 +202,6 @@ episode_rules = extract_json(ep_response.text)
 # =============================
 # RESULTADO FINAL
 # =============================
-
 final_rules = {
     "anime_page": anime_rules,
     "episode_page": episode_rules,
