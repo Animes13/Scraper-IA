@@ -1,23 +1,23 @@
 {
   "stream": {
-    "count": 3,
+    "count": 4,
     "rules": {
       "player_button": "button.episodes-view-btn.btn-style"
     },
-    "last_success": "2026-01-16T06:46:59.782097"
+    "last_success": "2026-01-16T13:02:07.289007"
   },
   "episode_list": {
-    "count": 72,
+    "count": 96,
     "rules": {
       "player_button": "button.player-tab[data-blogger-url-encrypted]"
     },
-    "last_success": "2026-01-16T08:37:04.316888"
+    "last_success": "2026-01-16T15:52:27.141316"
   },
   "anime_list": {
-    "count": 3,
+    "count": 4,
     "rules": {
       "player_button": "button.player-tab[data-blogger-url-encrypted]"
     },
-    "last_success": "2026-01-16T08:49:19.535382"
+    "last_success": "2026-01-16T16:10:57.151970"
   }
 }
