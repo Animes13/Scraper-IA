@@ -1,7 +1,12 @@
 {
-  "episode_list": ".episodes-grid",
-  "episode_link": ".boxEP a",
-  "player_button": "a.btn-principal",
-  "blogger_regex": null,
-  "observacoes": "As informações foram inferidas a partir das definições de classes CSS, pois o HTML fornecido é apenas a seção <head>. `episode_list` é inferido de classes de layout como `.episodes-grid` para o container. `episode_link` é presumido como um link `<a>` dentro de cada item de episódio (`.boxEP`). `player_button` é inferido como um link com o estilo de botão primário (`.btn-principal`), comum para ações como 'assistir' em páginas de player. Nenhuma referência ao Blogger foi encontrada."
+  "anime_page": {
+    "episode_list": null,
+    "episode_link": null
+  },
+  "episode_page": {
+    "player_button": null,
+    "iframe_selector": null,
+    "blogger_regex": null
+  },
+  "observacoes": "O HTML fornecido é parcial e contém apenas a seção <head> e um bloco de CSS. Não há elementos <body> ou conteúdo que permitam identificar a lista de episódios, links de episódio, botões de player ou iframes de player, incluindo aqueles que pudessem conter URLs do Blogger. Assim, todos os seletores são nulos conforme as regras."
 }
