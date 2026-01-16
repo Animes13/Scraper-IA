@@ -71,7 +71,11 @@ prompt = f"""
 Responda APENAS com JSON puro.
 
 Você é uma IA especialista em scraping avançado.
-Analise o HTML FINAL abaixo (já renderizado por navegador real).
+Analise o HTML FINAL abaixo, que CONTÉM <head> E <body> completos,
+renderizado por um navegador real com JavaScript executado.
+
+NÃO presuma ausência de conteúdo.
+Baseie-se EXCLUSIVAMENTE nos elementos realmente presentes no HTML.
 
 Extraia informações MESMO QUE NÃO SEJAM ÓBVIAS.
 
