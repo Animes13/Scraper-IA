@@ -1,12 +1,8 @@
 {
   "anime_page": {
-    "episode_list": null,
-    "episode_link": null
+    "episode_list_container_selector": null,
+    "episode_links_selector": null
   },
-  "episode_page": {
-    "player_button": null,
-    "iframe_selector": null,
-    "blogger_regex": null
-  },
-  "observacoes": "O HTML fornecido é parcial e contém apenas a seção <head> e um bloco de CSS. Não há elementos <body> ou conteúdo que permitam identificar a lista de episódios, links de episódio, botões de player ou iframes de player, incluindo aqueles que pudessem conter URLs do Blogger. Assim, todos os seletores são nulos conforme as regras."
+  "episode_page": {},
+  "episode_links_detected": []
 }
