@@ -35,13 +35,11 @@ def extract_json(text):
 def fetch_html(url, wait_selector=None, scroll_times=5):
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
-        page = browser.new_page(
-            user_agent=(
-                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                "AppleWebKit/537.36 (KHTML, like Gecko) "
-                "Chrome/120.0.0.0 Safari/537.36"
-            )
-        )
+        page = browser.new_page(user_agent=(
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+            "AppleWebKit/537.36 (KHTML, like Gecko) "
+            "Chrome/120.0.0.0 Safari/537.36"
+        ))
 
         print(f"[PLAYWRIGHT] Abrindo: {url}")
         page.goto(url, timeout=60000)
@@ -62,10 +60,15 @@ def fetch_html(url, wait_selector=None, scroll_times=5):
         return html
 
 # =============================
-# EXTRAI LINKS DE EPISÓDIOS
+# DETECÇÃO DE LINKS DE EPISÓDIOS
 # =============================
 
 def extract_episode_links(html):
+    """
+    Tenta extrair links de episódios:
+    1) Primeiro, tenta container conhecido (CSS fixo)
+    2) Depois, fallback: qualquer link numérico no HTML
+    """
     soup = BeautifulSoup(html, "html.parser")
     container = soup.select_one(".episodes-grid") or soup.select_one("#episodes-container")
     links = []
@@ -103,6 +106,7 @@ def extract_blogger_googlevideo(html):
     try:
         if not html:
             return None
+        # VIDEO_CONFIG antigo
         m = re.search(r'VIDEO_CONFIG\s*=\s*({.*?});', html, re.DOTALL)
         if m:
             data = json.loads(m.group(1))
@@ -110,6 +114,7 @@ def extract_blogger_googlevideo(html):
             if streams:
                 streams.sort(key=lambda x: int(x.get("format_id", 0)), reverse=True)
                 return streams[0].get("play_url") or streams[0].get("url")
+        # ytInitialPlayerResponse novo
         m = re.search(r'ytInitialPlayerResponse\s*=\s*({.*?});', html, re.DOTALL)
         if m:
             data = json.loads(m.group(1))
@@ -119,6 +124,7 @@ def extract_blogger_googlevideo(html):
                 url = f.get("url")
                 if url and "googlevideo.com" in url:
                     return url
+        # fallback regex direto
         m = re.search(r'(https://[^"\']+googlevideo\.com/videoplayback[^"\']+)', html)
         if m:
             return m.group(1)
@@ -130,7 +136,7 @@ def extract_blogger_googlevideo(html):
 # PASSO 1: PÁGINA DO ANIME
 # =============================
 
-anime_html = fetch_html(ANIME_URL, wait_selector=".episodes-grid")
+anime_html = fetch_html(ANIME_URL)
 episode_links = extract_episode_links(anime_html)
 
 if not episode_links:
@@ -144,7 +150,7 @@ first_ep_url = episode_links[0]
 print(f"[OK] Primeiro episódio detectado: {first_ep_url}")
 
 # =============================
-# IA ANALISA ANIME PAGE
+# IA – PÁGINA DO ANIME (ADAPTATIVO)
 # =============================
 
 anime_prompt = f"""
@@ -155,9 +161,10 @@ Objetivo:
 - Detectar o container da lista de episódios
 - Detectar link de cada episódio
 - Retornar null se não existir
+- Tente pensar onde os episódios estão, mesmo que o layout mude
 
 HTML:
-{anime_html[:50000]}
+{anime_html[:80000]}
 """
 
 anime_response = client.models.generate_content(
@@ -180,9 +187,10 @@ Objetivo:
 - Detectar iframe do player
 - Detectar URL Blogger
 - Retornar null se não existir
+- Tente aprender o padrão do player para futuras alterações do site
 
 HTML:
-{ep_html[:50000]}
+{ep_html[:80000]}
 """
 
 ep_response = client.models.generate_content(
