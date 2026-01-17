@@ -5,7 +5,6 @@ import json
 import requests
 from google import genai  # ⚡ oficial
 from datetime import datetime
-from bs4 import BeautifulSoup
 
 API_KEY = os.getenv("GEMINI_API_KEY")
 if not API_KEY:
@@ -60,7 +59,8 @@ Você é uma IA especialista em scraping adaptativo.
 
 Objetivo:
 - Detectar container da lista de episódios
-- Detectar link de cada episódio
+- Detectar links de cada episódio
+- NÃO listar links específicos, apenas crie regras genéricas
 - Retornar null se não existir
 
 HTML:
@@ -74,12 +74,12 @@ HTML:
     )
 
     # ✅ pegar o texto retornado do modelo (CORRETO)
-    rules_text = response.text  # 👈 aqui é a mudança principal
+    rules_text = response.text
     rules = extract_json(rules_text)
 
     rules_file = os.path.join(RULES_DIR, "goyabu.json")
     with open(rules_file, "w", encoding="utf-8") as f:
         json.dump(rules, f, indent=2, ensure_ascii=False)
 
-    print(f"\n[IA] Regras salvas em {rules_file}")
+    print(f"\n[IA] Regras genéricas salvas em {rules_file}")
     print(json.dumps(rules, indent=2, ensure_ascii=False))
