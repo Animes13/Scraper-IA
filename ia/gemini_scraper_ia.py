@@ -3,7 +3,7 @@ import os
 import re
 import json
 import requests
-from google import genai  # ⚡ atualizado
+from google import genai  # ⚡ oficial
 from datetime import datetime
 from bs4 import BeautifulSoup
 
@@ -67,13 +67,13 @@ HTML:
 {html[:80000]}
 """
 
-    # 🔹 Uso correto da API nova google-genai
-    response = client.text.generate(
+    # 🔹 Uso correto da API oficial google-genai
+    response = client.generate_text(
         model=MODEL,
         prompt=prompt,
         temperature=0.0
     )
-    rules = extract_json(response.result[0].content[0].text)  # ✅ pega o texto correto
+    rules = extract_json(response.text)  # ✅ pega o texto correto
 
     rules_file = os.path.join(RULES_DIR, "goyabu.json")
     with open(rules_file, "w", encoding="utf-8") as f:
