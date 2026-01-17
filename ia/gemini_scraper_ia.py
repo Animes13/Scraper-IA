@@ -3,7 +3,7 @@ import os
 import re
 import json
 import requests
-from google import genai
+import google.generativeai as genai
 from datetime import datetime
 from bs4 import BeautifulSoup
 
@@ -22,7 +22,7 @@ HEADERS = {
     "User-Agent": "Mozilla/5.0 (Linux; Android 10; Kodi) AppleWebKit/537.36 Chrome/120.0"
 }
 
-client = genai.Client(api_key=API_KEY)
+genai.api_key = API_KEY
 
 # =============================
 # FETCH HTML
@@ -66,8 +66,14 @@ Objetivo:
 HTML:
 {html[:80000]}
 """
-    response = client.models.generate_content(model=MODEL, contents=prompt)
-    rules = extract_json(response.text)
+
+    # ======= Correção =======
+    response = genai.models.generate_content(
+        model=MODEL,
+        contents=[{"type": "text", "text": prompt}]
+    )
+    rules = extract_json(response.last["content"][0]["text"])
+    # ========================
 
     rules_file = os.path.join(RULES_DIR, "goyabu.json")
     with open(rules_file, "w", encoding="utf-8") as f:
