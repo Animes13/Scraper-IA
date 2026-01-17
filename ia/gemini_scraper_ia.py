@@ -3,7 +3,7 @@ import os
 import re
 import json
 import requests
-import google.genai as genai  # ⚡ atualizado
+from google import genai  # ⚡ atualizado
 from datetime import datetime
 from bs4 import BeautifulSoup
 
@@ -22,8 +22,8 @@ HEADERS = {
     "User-Agent": "Mozilla/5.0 (Linux; Android 10; Kodi) AppleWebKit/537.36 Chrome/120.0"
 }
 
-# 🔹 Configuração da API nova
-genai.configure(api_key=API_KEY)
+# 🔹 Criação do client com a API Key
+client = genai.Client(api_key=API_KEY)
 
 # =============================
 # FETCH HTML
@@ -67,13 +67,13 @@ HTML:
 {html[:80000]}
 """
 
-    # 🔹 Uso da API nova google.genai
-    response = genai.TextGeneration.create(
+    # 🔹 Uso correto da API nova google-genai
+    response = client.text.generate(
         model=MODEL,
         prompt=prompt,
         temperature=0.0
     )
-    rules = extract_json(response.output_text)  # ✅ pega o texto correto
+    rules = extract_json(response.result[0].content[0].text)  # ✅ pega o texto correto
 
     rules_file = os.path.join(RULES_DIR, "goyabu.json")
     with open(rules_file, "w", encoding="utf-8") as f:
