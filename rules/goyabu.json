@@ -1,4 +1,9 @@
 {
-  "episode_list_container": null,
-  "episode_link_selector": null
+  "episodeListContainer": {
+    "selector": "div.episodes-grid, div.episodes-list, div.episodes-minimal",
+    "links": {
+      "selector": "div.episode-item a.thumb",
+      "attribute": "href"
+    }
+  }
 }
