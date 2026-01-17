@@ -59,7 +59,6 @@ def save_json(data, filename="all_animes.json"):
 # ==================================================
 def extract_blogger_googlevideo(html):
     try:
-        # fallback regex direto
         m = re.search(r'(https://[^"\']+googlevideo\.com/videoplayback[^"\']+)', html)
         if m:
             return m.group(1)
@@ -98,9 +97,10 @@ class Hinata:
 
             result = []
             for ep in eps:
-                title = f"Episódio {int(ep['episodio']):02d} - {ep.get('audio', '')}"
-                link = urljoin(BASE, ep.get("id", ""))
-                result.append((title, link))
+                ep_title = f"Episódio {int(ep['episodio']):02d} - {ep.get('audio', '')}"
+                ep_id = str(ep.get("id", ""))  # garante string
+                link = urljoin(BASE, ep_id)
+                result.append((ep_title, link))
 
             return result, False, None
         except Exception as e:
@@ -115,8 +115,6 @@ class Hinata:
             r = requests.get(url, headers=self.headers, timeout=15)
             r.raise_for_status()
             html = r.text
-
-            # fallback direto
             link = extract_blogger_googlevideo(html)
             if link:
                 return link
@@ -187,9 +185,14 @@ def get_anime_list(page=1):
 def process_animes():
     scraper = Hinata()
     final_result = {}
+    page = 1
 
-    for page in range(1, 3):  # pegar primeiras 2 páginas como exemplo
+    while True:
         anime_list = get_anime_list(page)
+        if not anime_list:
+            print(f"🌐 [LIST] Nenhum anime encontrado na página {page}, finalizando scraping.")
+            break
+
         for anime in anime_list:
             anime_name = anime["name"]
             final_result[anime_name] = {}
@@ -205,22 +208,18 @@ def process_animes():
                     ep_url = ep[1]
 
                     try:
-                        # Requisição do episódio
                         r = requests.get(ep_url, timeout=15)
                         r.raise_for_status()
                         html = r.text
 
-                        # Salva HTML local
                         save_html(html, f"{anime_name}_{ep_title}")
 
-                        # Resolve link
                         link = scraper.resolver(ep_url)
                         if not link:
                             link = extract_blogger_googlevideo(html)
                         if not link:
                             link = "Link não encontrado"
 
-                        # Normaliza título e remove "EP" ou "Episódio"
                         clean_title = normalize_title(ep_title)
                         final_result[anime_name][f"📺 {ep_title}"] = {
                             "url": link,
@@ -228,8 +227,6 @@ def process_animes():
                         }
 
                         resolved_eps += 1
-
-                        # 🔥 Log de progresso
                         print(
                             f"{anime_name} | 📺 {ep_title} | "
                             f"✅ Resolvidos: {resolved_eps}/{total_eps} | "
@@ -242,6 +239,8 @@ def process_animes():
 
             except Exception as e:
                 print(f"[❌ ERRO] Falha ao coletar episódios de {anime_name}: {e}")
+
+        page += 1  # passa para a próxima página
 
     save_json(final_result)
 
