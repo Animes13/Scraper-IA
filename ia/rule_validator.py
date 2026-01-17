@@ -1,4 +1,3 @@
-# rule_validator.py
 from bs4 import BeautifulSoup
 import re
 
@@ -28,6 +27,8 @@ WEIGHTS = {
 # HELPERS
 # =============================
 def css_exists(soup, selector):
+    if not selector:
+        return False
     try:
         return bool(soup.select(selector))
     except Exception:
@@ -35,10 +36,31 @@ def css_exists(soup, selector):
 
 
 def attr_exists(soup, attr):
-    return bool(soup.select(f"[{attr}]"))
+    """
+    Aceita:
+    - nome de atributo: data-player
+    - seletor CSS completo: div[data-player], .btn[data-src]
+    """
+    if not attr:
+        return False
+
+    # Se parecer seletor CSS completo
+    if any(c in attr for c in [" ", ".", "[", ">", "#", ":"]):
+        try:
+            return bool(soup.select(attr))
+        except Exception:
+            return False
+
+    # Caso seja apenas nome de atributo
+    try:
+        return bool(soup.select(f"[{attr}]"))
+    except Exception:
+        return False
 
 
 def regex_exists(html, pattern):
+    if not pattern:
+        return False
     try:
         return bool(re.search(pattern, html))
     except Exception:
@@ -55,7 +77,7 @@ def validate_anime_list(html, rules):
 
     for field, weight in WEIGHTS["anime_list_page"].items():
         selector = rules.get(field)
-        ok = selector and css_exists(soup, selector)
+        ok = css_exists(soup, selector)
         if ok:
             score += weight
         details[field] = ok
@@ -68,24 +90,24 @@ def validate_anime_page(html, rules, context):
     score = 0
     details = {}
 
-    # container
+    # container de episódios
     sel = rules.get("episodes_container")
-    ok = sel and css_exists(soup, sel)
-    if ok:
+    ok_container = css_exists(soup, sel)
+    if ok_container:
         score += WEIGHTS["anime_page"]["episodes_container"]
-    details["episodes_container"] = ok
+    details["episodes_container"] = ok_container
 
-    # links
+    # links de episódios
     sel = rules.get("episode_link")
-    ok = sel and css_exists(soup, sel)
-    if ok:
+    ok_links = css_exists(soup, sel)
+    if ok_links:
         score += WEIGHTS["anime_page"]["episode_link"]
-    details["episode_link"] = ok
+    details["episode_link"] = ok_links
 
-    # contexto JS
+    # alerta de JS
     if context.get("anime_page", {}).get("has_js_episodes"):
-        if not ok:
-            details["js_warning"] = "Página parece JS, links HTML não detectados"
+        if not ok_links:
+            details["js_warning"] = "Episódios parecem carregados via JavaScript"
 
     return score, details
 
@@ -95,31 +117,31 @@ def validate_episode_page(html, rules, context):
     score = 0
     details = {}
 
-    # iframe
+    # iframe do player
     sel = rules.get("player_iframe")
-    ok = sel and css_exists(soup, sel)
-    if ok:
+    ok_iframe = css_exists(soup, sel)
+    if ok_iframe:
         score += WEIGHTS["episode_page"]["player_iframe"]
-    details["player_iframe"] = ok
+    details["player_iframe"] = ok_iframe
 
-    # atributo criptografado
+    # atributo criptografado ou seletor equivalente
     attr = rules.get("encrypted_attribute")
-    ok = attr and attr_exists(soup, attr)
-    if ok:
+    ok_attr = attr_exists(soup, attr)
+    if ok_attr:
         score += WEIGHTS["episode_page"]["encrypted_attribute"]
-    details["encrypted_attribute"] = ok
+    details["encrypted_attribute"] = ok_attr
 
-    # blogger
+    # padrão blogger / googlevideo
     pattern = rules.get("blogger_pattern")
-    ok = pattern and regex_exists(html, pattern)
-    if ok:
+    ok_blog = regex_exists(html, pattern)
+    if ok_blog:
         score += WEIGHTS["episode_page"]["blogger_pattern"]
-    details["blogger_pattern"] = ok
+    details["blogger_pattern"] = ok_blog
 
-    # contexto
+    # hint contextual
     if context.get("episode_page", {}).get("has_blogger"):
-        if not ok:
-            details["blogger_hint"] = "Indícios de Blogger detectados no HTML"
+        if not ok_blog:
+            details["blogger_hint"] = "Indícios de Blogger/GoogleVideo detectados"
 
     return score, details
 
