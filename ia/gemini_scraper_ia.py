@@ -4,9 +4,9 @@ import re
 import json
 import requests
 from datetime import datetime
-from google import genai  # API oficial Gemini
+from google import genai  # ✅ novo import oficial
 
-from rule_validator import validate  # 🔥 VALIDADOR
+from rule_validator import validate
 
 # =============================
 # CONFIG
@@ -24,28 +24,28 @@ HEADERS = {
 }
 
 # =============================
-# DIRETÓRIOS
+# PATHS
 # =============================
 HTML_DIR = "HTML"
 RULES_DIR = "rules"
 
 HTML_MAP = {
-    "anime_list_page": os.path.join(HTML_DIR, "anime_list"),
-    "anime_page": os.path.join(HTML_DIR, "anime_page"),
-    "episode_page": os.path.join(HTML_DIR, "episode_page"),
+    "anime_list_page": f"{HTML_DIR}/anime_list",
+    "anime_page": f"{HTML_DIR}/anime_page",
+    "episode_page": f"{HTML_DIR}/episode_page",
 }
 
 RULES_MAP = {
-    "anime_list_page": os.path.join(RULES_DIR, "anime_list"),
-    "anime_page": os.path.join(RULES_DIR, "anime_page"),
-    "episode_page": os.path.join(RULES_DIR, "episode_page"),
+    "anime_list_page": f"{RULES_DIR}/anime_list",
+    "anime_page": f"{RULES_DIR}/anime_page",
+    "episode_page": f"{RULES_DIR}/episode_page",
 }
 
 for d in list(HTML_MAP.values()) + list(RULES_MAP.values()):
     os.makedirs(d, exist_ok=True)
 
 # =============================
-# CLIENT GEMINI
+# GEMINI CLIENT
 # =============================
 client = genai.Client(api_key=API_KEY)
 
@@ -60,7 +60,7 @@ def fetch_html(url):
 
 def save_html(html, page_type):
     ts = datetime.now().strftime("%Y%m%d_%H%M%S")
-    path = os.path.join(HTML_MAP[page_type], f"{page_type}_{ts}.html")
+    path = f"{HTML_MAP[page_type]}/{page_type}_{ts}.html"
     with open(path, "w", encoding="utf-8") as f:
         f.write(html)
     print(f"📄 [OK] HTML salvo → {path}")
@@ -68,45 +68,64 @@ def save_html(html, page_type):
 
 
 def extract_json(text):
-    clean = re.sub(r"```(?:json)?", "", text, flags=re.IGNORECASE)
+    clean = re.sub(r"```(?:json)?", "", text, flags=re.I)
     clean = clean.strip("` \n\t")
     return json.loads(clean)
 
 
 def save_rules(page_type, rules):
-    path = os.path.join(RULES_MAP[page_type], "goyabu.json")
+    path = f"{RULES_MAP[page_type]}/goyabu.json"
     with open(path, "w", encoding="utf-8") as f:
         json.dump({page_type: rules}, f, indent=2, ensure_ascii=False)
     print(f"💾 [OK] Regras salvas → {path}")
 
+# =============================
+# 🔍 CLASSIFICADOR DE CONTEXTO
+# =============================
+def classify_html(html_map):
+    context = {}
+
+    anime_html = html_map["anime_page"]
+    episode_html = html_map["episode_page"]
+
+    context["anime_page"] = {
+        "has_js_episodes": any(x in anime_html for x in ["data-list", "allEpisodes", "episodesJson"]),
+        "has_html_episodes": any(x in anime_html for x in ["episode-item", "boxEP", "episodes"])
+    }
+
+    context["episode_page"] = {
+        "has_iframe": "<iframe" in episode_html,
+        "has_player_button": "player" in episode_html and "button" in episode_html,
+        "has_blogger": any(x in episode_html for x in ["blogger", "googlevideo"])
+    }
+
+    return context
 
 # =============================
-# PROMPT BASE
+# PROMPT
 # =============================
-def build_prompt(html_map, feedback=None):
+def build_prompt(html_map, context, feedback=None):
+
     feedback_txt = ""
     if feedback:
         feedback_txt = f"""
-REANÁLISE OBRIGATÓRIA:
-A regra anterior falhou pelos motivos abaixo.
-Corrija e melhore.
-
-FALHAS DETECTADAS:
+FALHAS ANTERIORES (corrija):
 {json.dumps(feedback, indent=2, ensure_ascii=False)}
 """
 
     return f"""
-Responda APENAS com JSON puro.
+Responda APENAS com JSON válido.
 NÃO explique.
 NÃO use URLs fixas.
-NÃO use números específicos.
-NÃO liste links reais.
+NÃO use números.
+NÃO use textos específicos.
 
-Você é uma IA especialista em scraping GENÉRICO e ADAPTATIVO.
-Suas regras DEVEM funcionar em múltiplos animes.
+Você é uma IA especialista em SCRAPING GENÉRICO ADAPTATIVO.
 
-Estrutura OBRIGATÓRIA:
+CONTEXTO DETECTADO AUTOMATICAMENTE:
+{json.dumps(context, indent=2, ensure_ascii=False)}
 
+Estrutura obrigatória:
 {{
   "anime_list_page": {{
     "container": null,
@@ -125,23 +144,22 @@ Estrutura OBRIGATÓRIA:
 }}
 
 REGRAS:
-- Use SOMENTE CSS genérico
-- NÃO dependa de texto fixo
-- NÃO dependa de ordem exata
-- Pense como um scraper resiliente
+- CSS genérico e resiliente
+- Não dependa de texto
+- Não dependa de ordem
+- Pense em múltiplos animes
 
 {feedback_txt}
 
-HTML — LISTA DE ANIMES:
+HTML — LISTA:
 {html_map["anime_list_page"][:60000]}
 
-HTML — PÁGINA DO ANIME:
+HTML — ANIME:
 {html_map["anime_page"][:60000]}
 
-HTML — PÁGINA DO EPISÓDIO:
+HTML — EPISÓDIO:
 {html_map["episode_page"][:60000]}
 """
-
 
 # =============================
 # MAIN
@@ -158,20 +176,20 @@ if __name__ == "__main__":
 
     html_map = {}
 
-    # 🔹 FETCH + SAVE HTML
     for page_type, url in urls.items():
         print(f"🌐 Baixando {page_type} → {url}")
         html = fetch_html(url)
         save_html(html, page_type)
         html_map[page_type] = html
 
+    context = classify_html(html_map)
     feedback = None
+    best_score = 0
 
-    # 🔁 LOOP ADAPTATIVO
     for attempt in range(1, MAX_RETRIES + 1):
         print(f"\n🤖 Tentativa IA #{attempt}")
 
-        prompt = build_prompt(html_map, feedback)
+        prompt = build_prompt(html_map, context, feedback)
 
         response = client.models.generate_content(
             model=MODEL,
@@ -180,34 +198,39 @@ if __name__ == "__main__":
 
         rules = extract_json(response.text)
 
-        all_valid = True
         feedback = {}
+        total_score = 0
+        all_valid = True
 
-        # 🧪 VALIDAR CADA PÁGINA
-        for page_type in ["anime_list_page", "anime_page", "episode_page"]:
+        for page_type in rules:
             print(f"🧪 Validando {page_type}...")
             result = validate(
                 page_type,
                 html_map[page_type],
-                rules.get(page_type, {}),
-                base_url=BASE_URL
+                rules[page_type],
+                context=context
             )
 
             print(f"📊 Score: {result['score']} | Válido: {result['valid']}")
+            total_score += result["score"]
 
             if not result["valid"]:
                 all_valid = False
                 feedback[page_type] = result
 
-        # ✅ SUCESSO
+        if total_score < best_score:
+            print("⚠️ Regressão detectada, descartando regras")
+            continue
+
+        best_score = total_score
+
         if all_valid:
             print("\n✅ REGRAS APROVADAS (100%) 🎯")
             for page_type in rules:
                 save_rules(page_type, rules[page_type])
-            print("\n🔥 IA FINALMENTE APRENDEU SOZINHA")
+            print("🔥 IA ADAPTATIVA CONCLUÍDA")
             break
 
-        print("🔁 Regras insuficientes, reanalisando automaticamente...")
-
+        print("🔁 Reanalisando com feedback...")
     else:
-        print("\n❌ Falhou após várias tentativas. HTML pode estar muito dinâmico.")
+        print("\n❌ Falhou após várias tentativas. HTML altamente dinâmico.")

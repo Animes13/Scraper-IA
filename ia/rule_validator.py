@@ -1,189 +1,153 @@
 # rule_validator.py
-import re
 from bs4 import BeautifulSoup
-from urllib.parse import urljoin
-
+import re
 
 # =============================
-# UTILIDADES
+# CONFIG
 # =============================
+PASS_SCORE = 70
 
-def unique_list(seq):
-    seen = set()
-    out = []
-    for x in seq:
-        if x not in seen:
-            seen.add(x)
-            out.append(x)
-    return out
+WEIGHTS = {
+    "anime_list_page": {
+        "container": 20,
+        "anime_card": 40,
+        "anime_link": 40,
+    },
+    "anime_page": {
+        "episodes_container": 50,
+        "episode_link": 50,
+    },
+    "episode_page": {
+        "player_iframe": 60,
+        "encrypted_attribute": 20,
+        "blogger_pattern": 20,
+    },
+}
 
-
-def looks_like_episode(text):
-    """
-    Detecta se o texto parece um episódio válido.
-    Ignora filmes, especiais, trailers etc.
-    """
-    text = text.lower()
-    blacklist = ["filme", "movie", "especial", "ova", "trailer", "pv"]
-    if any(b in text for b in blacklist):
+# =============================
+# HELPERS
+# =============================
+def css_exists(soup, selector):
+    try:
+        return bool(soup.select(selector))
+    except Exception:
         return False
-    return True
+
+
+def attr_exists(soup, attr):
+    return bool(soup.select(f"[{attr}]"))
+
+
+def regex_exists(html, pattern):
+    try:
+        return bool(re.search(pattern, html))
+    except Exception:
+        return False
 
 
 # =============================
-# VALIDADORES
+# VALIDADORES POR PÁGINA
 # =============================
-
-def validate_anime_list_page(html, rules, base_url=None):
+def validate_anime_list(html, rules):
     soup = BeautifulSoup(html, "html.parser")
     score = 0
-    result = {
-        "anime_links": [],
-        "score": 0,
-        "valid": False,
-        "reason": []
-    }
+    details = {}
 
-    container_sel = rules.get("container")
-    card_sel = rules.get("anime_card")
-    link_sel = rules.get("anime_link")
+    for field, weight in WEIGHTS["anime_list_page"].items():
+        selector = rules.get(field)
+        ok = selector and css_exists(soup, selector)
+        if ok:
+            score += weight
+        details[field] = ok
 
-    if container_sel:
-        container = soup.select_one(container_sel)
-        if container:
-            score += 20
-        else:
-            result["reason"].append("container_not_found")
-
-    cards = soup.select(card_sel) if card_sel else []
-    if cards:
-        score += 20
-    else:
-        result["reason"].append("no_cards_found")
-
-    links = []
-    if link_sel:
-        for a in soup.select(link_sel):
-            href = a.get("href")
-            if href:
-                full = urljoin(base_url, href) if base_url else href
-                links.append(full)
-
-    links = unique_list(links)
-
-    if len(links) >= 10:
-        score += 40
-    else:
-        result["reason"].append("few_anime_links")
-
-    result["anime_links"] = links
-    result["score"] = score
-    result["valid"] = score >= 70
-
-    return result
+    return score, details
 
 
-def validate_anime_page(html, rules, base_url=None):
+def validate_anime_page(html, rules, context):
     soup = BeautifulSoup(html, "html.parser")
     score = 0
-    result = {
-        "episode_links": [],
-        "score": 0,
-        "valid": False,
-        "reason": []
-    }
+    details = {}
 
-    container_sel = rules.get("episodes_container")
-    link_sel = rules.get("episode_link")
+    # container
+    sel = rules.get("episodes_container")
+    ok = sel and css_exists(soup, sel)
+    if ok:
+        score += WEIGHTS["anime_page"]["episodes_container"]
+    details["episodes_container"] = ok
 
-    container = soup.select_one(container_sel) if container_sel else None
-    if container:
-        score += 25
-    else:
-        result["reason"].append("episodes_container_not_found")
-        container = soup  # fallback genérico
+    # links
+    sel = rules.get("episode_link")
+    ok = sel and css_exists(soup, sel)
+    if ok:
+        score += WEIGHTS["anime_page"]["episode_link"]
+    details["episode_link"] = ok
 
-    links = []
-    if link_sel:
-        for a in container.select(link_sel):
-            href = a.get("href")
-            text = a.get_text(strip=True)
+    # contexto JS
+    if context.get("anime_page", {}).get("has_js_episodes"):
+        if not ok:
+            details["js_warning"] = "Página parece JS, links HTML não detectados"
 
-            if not href or not looks_like_episode(text):
-                continue
-
-            full = urljoin(base_url, href) if base_url else href
-            links.append(full)
-
-    links = unique_list(links)
-
-    if len(links) >= 3:
-        score += 40
-    else:
-        result["reason"].append("few_episode_links")
-
-    # ordem (heurística simples)
-    if links == sorted(links):
-        score += 15
-
-    result["episode_links"] = links
-    result["score"] = score
-    result["valid"] = score >= 80
-
-    return result
+    return score, details
 
 
-def validate_episode_page(html, rules):
+def validate_episode_page(html, rules, context):
     soup = BeautifulSoup(html, "html.parser")
     score = 0
-    result = {
-        "player_found": False,
-        "iframe_src": None,
-        "score": 0,
-        "valid": False,
-        "reason": []
-    }
+    details = {}
 
-    iframe_sel = rules.get("player_iframe")
-    encrypted_attr = rules.get("encrypted_attribute")
+    # iframe
+    sel = rules.get("player_iframe")
+    ok = sel and css_exists(soup, sel)
+    if ok:
+        score += WEIGHTS["episode_page"]["player_iframe"]
+    details["player_iframe"] = ok
 
-    iframe = soup.select_one(iframe_sel) if iframe_sel else None
+    # atributo criptografado
+    attr = rules.get("encrypted_attribute")
+    ok = attr and attr_exists(soup, attr)
+    if ok:
+        score += WEIGHTS["episode_page"]["encrypted_attribute"]
+    details["encrypted_attribute"] = ok
 
-    if iframe:
-        src = iframe.get("src")
-        if src:
-            score += 60
-            result["iframe_src"] = src
-        else:
-            result["reason"].append("iframe_without_src")
-    else:
-        result["reason"].append("iframe_not_found")
+    # blogger
+    pattern = rules.get("blogger_pattern")
+    ok = pattern and regex_exists(html, pattern)
+    if ok:
+        score += WEIGHTS["episode_page"]["blogger_pattern"]
+    details["blogger_pattern"] = ok
 
-    # atributo criptografado (fallback)
-    if not iframe and encrypted_attr:
-        tag = soup.find(attrs={encrypted_attr: True})
-        if tag:
-            score += 40
+    # contexto
+    if context.get("episode_page", {}).get("has_blogger"):
+        if not ok:
+            details["blogger_hint"] = "Indícios de Blogger detectados no HTML"
 
-    result["player_found"] = score >= 60
-    result["score"] = score
-    result["valid"] = score >= 80
-
-    return result
+    return score, details
 
 
 # =============================
-# DISPATCHER GENÉRICO
+# ENTRYPOINT
 # =============================
+def validate(page_type, html, rules, context=None, base_url=None):
+    context = context or {}
 
-def validate(page_type, html, rules, base_url=None):
     if page_type == "anime_list_page":
-        return validate_anime_list_page(html, rules, base_url)
+        score, details = validate_anime_list(html, rules)
 
-    if page_type == "anime_page":
-        return validate_anime_page(html, rules, base_url)
+    elif page_type == "anime_page":
+        score, details = validate_anime_page(html, rules, context)
 
-    if page_type == "episode_page":
-        return validate_episode_page(html, rules)
+    elif page_type == "episode_page":
+        score, details = validate_episode_page(html, rules, context)
 
-    raise ValueError("Tipo de página inválido")
+    else:
+        return {
+            "valid": False,
+            "score": 0,
+            "error": "Tipo de página desconhecido"
+        }
+
+    return {
+        "valid": score >= PASS_SCORE,
+        "score": score,
+        "details": details
+    }
