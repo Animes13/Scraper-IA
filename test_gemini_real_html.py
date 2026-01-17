@@ -1,17 +1,14 @@
 import os
 import re
 import json
-from playwright.sync_api import sync_playwright, TimeoutError
+import requests
 from google import genai
-from urllib.parse import urljoin
 from bs4 import BeautifulSoup
-import base64
 from datetime import datetime
 
 # =============================
 # CONFIGURAÇÃO
 # =============================
-
 API_KEY = os.getenv("GEMINI_API_KEY")
 if not API_KEY:
     raise RuntimeError("GEMINI_API_KEY não definida")
@@ -21,153 +18,81 @@ client = genai.Client(api_key=API_KEY)
 MODEL = "models/gemini-2.5-flash"
 
 DATA_DIR = "data"
+RULES_DIR = "rules"
 os.makedirs(DATA_DIR, exist_ok=True)
+os.makedirs(RULES_DIR, exist_ok=True)
+
+HEADERS = {
+    "User-Agent": (
+        "Mozilla/5.0 (Linux; Android 10; Kodi) "
+        "AppleWebKit/537.36 Chrome/120.0"
+    )
+}
 
 # =============================
-# FUNÇÃO JSON SEGURO
+# JSON SEGURO
 # =============================
-
 def extract_json(text):
     clean = re.sub(r"```(?:json)?", "", text, flags=re.IGNORECASE)
     clean = clean.strip("` \n\t")
     return json.loads(clean)
 
 # =============================
-# FETCH HTML COM SCROLL
+# FETCH HTML
 # =============================
-
-def fetch_html(url, wait_selector=None, scroll_times=5):
-    with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)
-        page = browser.new_page(user_agent=(
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-            "AppleWebKit/537.36 (KHTML, like Gecko) "
-            "Chrome/120.0.0.0 Safari/537.36"
-        ))
-
-        print(f"[PLAYWRIGHT] Abrindo: {url}")
-        page.goto(url, timeout=60000)
-
-        if wait_selector:
-            try:
-                page.wait_for_selector(wait_selector, timeout=30000)
-            except TimeoutError:
-                print(f"[WARN] Seletor {wait_selector} não encontrado")
-
-        # scroll para disparar carregamento dinâmico
-        for _ in range(scroll_times):
-            page.mouse.wheel(0, 3000)
-            page.wait_for_timeout(1500)
-
-        html = page.content()
-        browser.close()
-        return html
+def fetch_html(url):
+    r = requests.get(url, headers=HEADERS, timeout=15)
+    r.raise_for_status()
+    return r.text
 
 # =============================
-# DETECÇÃO DE LINKS DE EPISÓDIOS
+# EXTRAI LINKS DE EPISÓDIOS
 # =============================
-
 def extract_episode_links(html):
-    """Tenta extrair links de episódios do HTML"""
-    soup = BeautifulSoup(html, "html.parser")
-    container = soup.select_one(".episodes-grid") or soup.select_one("#episodes-container")
     links = []
-
-    if container:
-        for a in container.select("a[href]"):
-            href = a["href"]
-            if re.match(r"https://goyabu\.io/\d+", href):
-                links.append(href)
-    else:
-        # fallback: busca qualquer link numérico no HTML
-        links = re.findall(r"https://goyabu\.io/(\d+)", html)
-        links = [f"https://goyabu.io/{i}" for i in links]
-
-    return list(dict.fromkeys(links))  # remove duplicados
+    m = re.search(r"const allEpisodes\s*=\s*(\[[\s\S]*?\]);", html)
+    if m:
+        eps = json.loads(m.group(1).replace("\\/", "/"))
+        eps.sort(key=lambda e: int(e.get("episodio", 0)))
+        for ep in eps:
+            links.append(f"https://goyabu.io/{ep['id']}")
+    return links
 
 # =============================
-# FUNÇÕES DE AJUDA
+# SALVA HTML COM TIMESTAMP
 # =============================
-
-def decrypt_blogger_url(encrypted):
-    try:
-        if not encrypted:
-            return None
-        encrypted = encrypted.strip()
-        missing = len(encrypted) % 4
-        if missing:
-            encrypted += "=" * (4 - missing)
-        decoded = base64.b64decode(encrypted).decode("utf-8", errors="ignore")
-        return decoded[::-1].strip() if decoded.startswith("http") else None
-    except:
-        return None
-
-def extract_blogger_googlevideo(html):
-    try:
-        if not html:
-            return None
-        # VIDEO_CONFIG antigo
-        m = re.search(r'VIDEO_CONFIG\s*=\s*({.*?});', html, re.DOTALL)
-        if m:
-            data = json.loads(m.group(1))
-            streams = data.get("streams", [])
-            if streams:
-                streams.sort(key=lambda x: int(x.get("format_id", 0)), reverse=True)
-                return streams[0].get("play_url") or streams[0].get("url")
-        # ytInitialPlayerResponse novo
-        m = re.search(r'ytInitialPlayerResponse\s*=\s*({.*?});', html, re.DOTALL)
-        if m:
-            data = json.loads(m.group(1))
-            formats = (data.get("streamingData", {}).get("formats", []) +
-                       data.get("streamingData", {}).get("adaptiveFormats", []))
-            for f in formats:
-                url = f.get("url")
-                if url and "googlevideo.com" in url:
-                    return url
-        # fallback regex direto
-        m = re.search(r'(https://[^"\']+googlevideo\.com/videoplayback[^"\']+)', html)
-        if m:
-            return m.group(1)
-        return None
-    except:
-        return None
+def save_html(html, name="anime_black_clover"):
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    filepath = os.path.join(DATA_DIR, f"{name}_{timestamp}.html")
+    with open(filepath, "w", encoding="utf-8") as f:
+        f.write(html)
+    print(f"[OK] HTML salvo em {filepath}")
+    return filepath
 
 # =============================
-# PASSO 1: PÁGINA DO ANIME
+# MAIN
 # =============================
-
 anime_html = fetch_html(ANIME_URL)
-timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-html_file = os.path.join(DATA_DIR, f"anime_black_clover_{timestamp}.html")
-
-with open(html_file, "w", encoding="utf-8") as f:
-    f.write(anime_html)
-print(f"[OK] HTML salvo em {html_file}")
+save_html(anime_html)
 
 episode_links = extract_episode_links(anime_html)
-if not episode_links:
-    print(f"[WARN] Nenhum link de episódio encontrado — HTML salvo para análise futura")
-    episode_links = []
-
 first_ep_url = episode_links[0] if episode_links else None
 if first_ep_url:
     print(f"[OK] Primeiro episódio detectado: {first_ep_url}")
 else:
-    print("[WARN] Não há episódios detectados — workflow continua para salvar regras e HTML")
+    print("[WARN] Nenhum episódio detectado — workflow continua")
 
 # =============================
-# IA – PÁGINA DO ANIME (ADAPTATIVO)
+# IA GEMINI – ADAPTATIVO
 # =============================
-
 anime_prompt = f"""
 Responda apenas com JSON puro.
 Você é uma IA especialista em scraping adaptativo.
 
 Objetivo:
-- Detectar o container da lista de episódios
+- Detectar container da lista de episódios
 - Detectar link de cada episódio
 - Retornar null se não existir
-- Tente pensar onde os episódios estão, mesmo que o layout mude
 
 HTML:
 {anime_html[:80000]}
@@ -179,10 +104,7 @@ anime_response = client.models.generate_content(
 )
 anime_rules = extract_json(anime_response.text)
 
-# =============================
-# PASSO 2: PÁGINA DO EPISÓDIO
-# =============================
-
+# Página do episódio
 if first_ep_url:
     ep_html = fetch_html(first_ep_url)
     ep_prompt = f"""
@@ -194,7 +116,6 @@ Objetivo:
 - Detectar iframe do player
 - Detectar URL Blogger
 - Retornar null se não existir
-- Tente aprender o padrão do player para futuras alterações do site
 
 HTML:
 {ep_html[:80000]}
@@ -208,17 +129,15 @@ else:
     episode_rules = {}
 
 # =============================
-# RESULTADO FINAL
+# SALVA REGRAS
 # =============================
-
 final_rules = {
     "anime_page": anime_rules,
     "episode_page": episode_rules,
     "episode_links_detected": episode_links
 }
 
-rules_file = os.path.join("rules", "goyabu.json")
-os.makedirs("rules", exist_ok=True)
+rules_file = os.path.join(RULES_DIR, "goyabu.json")
 with open(rules_file, "w", encoding="utf-8") as f:
     json.dump(final_rules, f, indent=2, ensure_ascii=False)
 
