@@ -70,11 +70,11 @@ HTML:
     # 🔹 Forma correta de gerar conteúdo com a API oficial atual
     response = client.models.generate_content(
         model=MODEL,
-        contents=prompt  # ou ["string do prompt"] funciona também
+        contents=prompt
     )
 
-    # ✅ pegar o texto retornado do modelo
-    rules = extract_json(response.last["content"][0]["text"])
+    # ✅ pegar o texto retornado do modelo (CORRETO)
+    rules = extract_json(response.output_text)
 
     rules_file = os.path.join(RULES_DIR, "goyabu.json")
     with open(rules_file, "w", encoding="utf-8") as f:
