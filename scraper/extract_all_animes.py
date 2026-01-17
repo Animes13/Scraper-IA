@@ -1,67 +1,29 @@
-# extract_all_animes.py
+# gemini_scraper_ia.py
 import os
 import re
 import json
 import requests
-import base64
-from urllib.parse import urljoin, quote_plus
-from bs4 import BeautifulSoup
+from google import genai  # ⚡ atualizado
 from datetime import datetime
+from bs4 import BeautifulSoup
 
+API_KEY = os.getenv("GEMINI_API_KEY")
+if not API_KEY:
+    raise RuntimeError("GEMINI_API_KEY não definida")
+
+MODEL = "models/gemini-2.5-flash"
 BASE_URL = "https://goyabu.io"
-DATA_DIR = "data"
-RULES_FILE = "rules/goyabu.json"
+DATA_DIR = "HTML"
+RULES_DIR = "rules"
 os.makedirs(DATA_DIR, exist_ok=True)
+os.makedirs(RULES_DIR, exist_ok=True)
 
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Linux; Android 10; Kodi) AppleWebKit/537.36 Chrome/120.0"
 }
 
-# =============================
-# FUNÇÕES DE DECODE
-# =============================
-def decrypt_blogger_url(encrypted):
-    try:
-        if not encrypted:
-            return None
-        encrypted = encrypted.strip()
-        missing = len(encrypted) % 4
-        if missing:
-            encrypted += "=" * (4 - missing)
-        decoded = base64.b64decode(encrypted).decode("utf-8", errors="ignore")
-        url = decoded[::-1].strip()
-        if not url.startswith("http"):
-            return None
-        return url
-    except:
-        return None
-
-def extract_blogger_googlevideo(html):
-    try:
-        if not html:
-            return None
-        m = re.search(r'VIDEO_CONFIG\s*=\s*({.*?});', html, re.DOTALL)
-        if m:
-            data = json.loads(m.group(1))
-            streams = data.get("streams", [])
-            if streams:
-                streams.sort(key=lambda x: int(x.get("format_id", 0)), reverse=True)
-                return streams[0].get("play_url") or streams[0].get("url")
-        m = re.search(r'ytInitialPlayerResponse\s*=\s*({.*?});', html, re.DOTALL)
-        if m:
-            data = json.loads(m.group(1))
-            formats = (data.get("streamingData", {}).get("formats", []) +
-                       data.get("streamingData", {}).get("adaptiveFormats", []))
-            for f in formats:
-                url = f.get("url")
-                if url and "googlevideo.com" in url:
-                    return url
-        m = re.search(r'(https://[^"\']+googlevideo\.com/videoplayback[^"\']+)', html)
-        if m:
-            return m.group(1)
-        return None
-    except:
-        return None
+# 🔹 Configuração da API nova
+client = genai.Client(api_key=API_KEY)
 
 # =============================
 # FETCH HTML
@@ -71,63 +33,50 @@ def fetch_html(url):
     r.raise_for_status()
     return r.text
 
-# =============================
-# PEGAR TODOS OS ANIMES
-# =============================
-def get_all_animes():
-    animes = []
-    page = 1
-    while True:
-        url = f"{BASE_URL}/lista-de-animes/page/{page}?l=todos&pg={page}"
-        r = fetch_html(url)
-        soup = BeautifulSoup(r, "html.parser")
-        cards = soup.select("article a[href]")
-        if not cards:
-            break
-        for a in cards:
-            link = urljoin(BASE_URL, a["href"])
-            title = a.get_text(" ", strip=True)
-            animes.append((title, link))
-        page += 1
-    return animes
+def save_html(html, name="page"):
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    path = os.path.join(DATA_DIR, f"{name}_{timestamp}.html")
+    with open(path, "w", encoding="utf-8") as f:
+        f.write(html)
+    print(f"[OK] HTML salvo em {path}")
+    return path
+
+def extract_json(text):
+    clean = re.sub(r"```(?:json)?", "", text, flags=re.IGNORECASE).strip("` \n\t")
+    return json.loads(clean)
 
 # =============================
 # MAIN
 # =============================
 if __name__ == "__main__":
-    final_json = {}
-    animes = get_all_animes()
-    print(f"[INFO] Total de animes: {len(animes)}")
+    anime_url = f"{BASE_URL}/anime/black-clover-dublado"
 
-    for title, link in animes:
-        print(f"🌐 {title}: iniciando...")
+    html = fetch_html(anime_url)
+    save_html(html, "anime_black_clover")
 
-        anime_html = fetch_html(link)
-        m = re.search(r"const allEpisodes\s*=\s*(\[[\s\S]*?\]);", anime_html)
-        if not m:
-            print(f"[WARN] Nenhum episódio encontrado em {title}")
-            continue
-        eps = json.loads(m.group(1).replace("\\/", "/"))
-        eps.sort(key=lambda e: int(e.get("episodio", 0)))
+    prompt = f"""
+Responda apenas com JSON puro.
+Você é uma IA especialista em scraping adaptativo.
 
-        ep_dict = {}
-        for ep in eps:
-            ep_url = f"{BASE_URL}/{ep['id']}"
-            ep_html = fetch_html(ep_url)
-            # Detectar Blogger
-            blogger_url = None
-            m_blogger = re.search(r'var\s+player_url\s*=\s*"([^"]+)"', ep_html)
-            if m_blogger:
-                blogger_url = decrypt_blogger_url(m_blogger.group(1))
-            # Extrair Googlevideo
-            final_url = extract_blogger_googlevideo(ep_html) or blogger_url
-            ep_dict[f"📺 EP {int(ep['episodio'])}"] = final_url
+Objetivo:
+- Detectar container da lista de episódios
+- Detectar link de cada episódio
+- Retornar null se não existir
 
-        final_json[f"🌐 {title}"] = ep_dict
-        print(f"🌐 {title}: 📺 Total: {len(ep_dict)} Resolvidos {len([v for v in ep_dict.values() if v])}")
+HTML:
+{html[:80000]}
+"""
 
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    filepath = os.path.join(DATA_DIR, f"animes_{timestamp}.json")
-    with open(filepath, "w", encoding="utf-8") as f:
-        json.dump(final_json, f, indent=2, ensure_ascii=False)
-    print(f"\n[OK] JSON final salvo em {filepath}")
+    # 🔹 Uso da API oficial google-genai
+    response = client.models.generate_content(
+        model=MODEL,
+        contents=[{"type": "text", "text": prompt}]
+    )
+    rules = extract_json(response.last["content"][0]["text"])  # ✅ pega o texto correto
+
+    rules_file = os.path.join(RULES_DIR, "goyabu.json")
+    with open(rules_file, "w", encoding="utf-8") as f:
+        json.dump(rules, f, indent=2, ensure_ascii=False)
+
+    print(f"\n[IA] Regras salvas em {rules_file}")
+    print(json.dumps(rules, indent=2, ensure_ascii=False))
