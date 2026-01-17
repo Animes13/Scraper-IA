@@ -68,14 +68,13 @@ HTML:
 """
 
     # 🔹 Forma correta de gerar conteúdo com a API oficial atual
-    response = client.generate_text(
+    response = client.models.generate_content(
         model=MODEL,
-        prompt=prompt,
-        temperature=0.0
+        contents=prompt  # ou ["string do prompt"] funciona também
     )
 
     # ✅ pegar o texto retornado do modelo
-    rules = extract_json(response.text)
+    rules = extract_json(response.last["content"][0]["text"])
 
     rules_file = os.path.join(RULES_DIR, "goyabu.json")
     with open(rules_file, "w", encoding="utf-8") as f:
