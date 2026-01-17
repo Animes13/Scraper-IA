@@ -1,0 +1,54 @@
+name: 🤖 Gemini Adaptive Scraper – Test Workflow
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  gemini-rules-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout do repositório
+        uses: actions/checkout@v4
+
+      - name: 🐍 Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: 📦 Instalar dependências
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests beautifulsoup4 google-genai
+
+      - name: 🔐 Validar variável de ambiente GEMINI_API_KEY
+        run: |
+          if [ -z "${{ secrets.GEMINI_API_KEY }}" ]; then
+            echo "❌ GEMINI_API_KEY não configurada"
+            exit 1
+          else
+            echo "✅ GEMINI_API_KEY encontrada"
+          fi
+
+      - name: 🧠 Gerar regras com Gemini (IA)
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          python ia/gemini_scraper_ia.py
+
+      - name: 🧪 Validar regras geradas
+        run: |
+          python ia/rule_validator.py
+
+      - name: 📂 Exibir estrutura de arquivos
+        run: |
+          echo "📁 HTML:"
+          find HTML -type f
+          echo ""
+          echo "📁 RULES:"
+          find rules -type f
+
+      - name: ✅ Finalização
+        run: echo "🎉 Workflow executado com sucesso"
