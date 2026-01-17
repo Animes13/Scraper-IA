@@ -3,7 +3,7 @@ import os
 import re
 import json
 import requests
-import google.generativeai as genai
+import google.genai as genai  # ⚡ atualizado
 from datetime import datetime
 from bs4 import BeautifulSoup
 
@@ -22,7 +22,8 @@ HEADERS = {
     "User-Agent": "Mozilla/5.0 (Linux; Android 10; Kodi) AppleWebKit/537.36 Chrome/120.0"
 }
 
-genai.api_key = API_KEY
+# 🔹 Configuração da API nova
+genai.configure(api_key=API_KEY)
 
 # =============================
 # FETCH HTML
@@ -48,7 +49,6 @@ def extract_json(text):
 # MAIN
 # =============================
 if __name__ == "__main__":
-    # URL do anime de exemplo
     anime_url = f"{BASE_URL}/anime/black-clover-dublado"
 
     html = fetch_html(anime_url)
@@ -67,13 +67,13 @@ HTML:
 {html[:80000]}
 """
 
-    # ======= Correção =======
-    response = genai.models.generate_content(
+    # 🔹 Uso da API nova google.genai
+    response = genai.TextGeneration.create(
         model=MODEL,
-        contents=[{"type": "text", "text": prompt}]
+        prompt=prompt,
+        temperature=0.0
     )
-    rules = extract_json(response.last["content"][0]["text"])
-    # ========================
+    rules = extract_json(response.output_text)  # ✅ pega o texto correto
 
     rules_file = os.path.join(RULES_DIR, "goyabu.json")
     with open(rules_file, "w", encoding="utf-8") as f:
