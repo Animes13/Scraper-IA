@@ -1,82 +1,252 @@
-# gemini_scraper_ia.py
+# -*- coding: utf-8 -*-
 import os
 import re
 import json
+import unicodedata
 import requests
-from google import genai  # ⚡ atualizado
 from datetime import datetime
+from urllib.parse import urljoin
 from bs4 import BeautifulSoup
 
-API_KEY = os.getenv("GEMINI_API_KEY")
-if not API_KEY:
-    raise RuntimeError("GEMINI_API_KEY não definida")
-
-MODEL = "models/gemini-2.5-flash"
-BASE_URL = "https://goyabu.io"
-DATA_DIR = "HTML"
+# ==================================================
+# CONFIGURAÇÕES DE DIRETÓRIOS
+# ==================================================
+BASE = "https://goyabu.io"
+HTML_DIR = "HTML"
+JSON_DIR = "data"
 RULES_DIR = "rules"
-os.makedirs(DATA_DIR, exist_ok=True)
+os.makedirs(HTML_DIR, exist_ok=True)
+os.makedirs(JSON_DIR, exist_ok=True)
 os.makedirs(RULES_DIR, exist_ok=True)
 
-HEADERS = {
-    "User-Agent": "Mozilla/5.0 (Linux; Android 10; Kodi) AppleWebKit/537.36 Chrome/120.0"
-}
+# ==================================================
+# NORMALIZAÇÃO DE TÍTULOS
+# ==================================================
+def normalize_title(title):
+    if not title:
+        return ""
+    title = unicodedata.normalize("NFKD", title)
+    title = title.encode("ascii", "ignore").decode("ascii")
+    title = title.lower()
+    title = re.sub(r"\(.*?\)", "", title)
+    title = re.sub(r"[–\-:]", " ", title)
+    title = re.sub(r"\b(part|cour|season|temporada|filme|movie|episodio|ep)\b.*", "", title)
+    title = re.sub(r"\s+\d+$", "", title)
+    title = re.sub(r"\s{2,}", " ", title)
+    return title.strip()
 
-# 🔹 Configuração da API nova
-client = genai.Client(api_key=API_KEY)
-
-# =============================
-# FETCH HTML
-# =============================
-def fetch_html(url):
-    r = requests.get(url, headers=HEADERS, timeout=15)
-    r.raise_for_status()
-    return r.text
-
-def save_html(html, name="page"):
+# ==================================================
+# SALVA HTML LOCAL
+# ==================================================
+def save_html(html, name):
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    path = os.path.join(DATA_DIR, f"{name}_{timestamp}.html")
+    path = os.path.join(HTML_DIR, f"{name}_{timestamp}.html")
     with open(path, "w", encoding="utf-8") as f:
         f.write(html)
-    print(f"[OK] HTML salvo em {path}")
     return path
 
-def extract_json(text):
-    clean = re.sub(r"```(?:json)?", "", text, flags=re.IGNORECASE).strip("` \n\t")
-    return json.loads(clean)
+# ==================================================
+# SALVA JSON FINAL
+# ==================================================
+def save_json(data, filename="all_animes.json"):
+    filepath = os.path.join(JSON_DIR, filename)
+    with open(filepath, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2, ensure_ascii=False)
+    print(f"[✅] JSON final salvo em {filepath}")
 
-# =============================
-# MAIN
-# =============================
+# ==================================================
+# EXTRAI GOOGLEVIDEO DO HTML DO BLOGGER
+# ==================================================
+def extract_blogger_googlevideo(html):
+    try:
+        # fallback regex direto
+        m = re.search(r'(https://[^"\']+googlevideo\.com/videoplayback[^"\']+)', html)
+        if m:
+            return m.group(1)
+        return None
+    except Exception:
+        return None
+
+# ==================================================
+# CLASSE HINATA PARA PEGAR EPISÓDIOS
+# ==================================================
+class Hinata:
+    def __init__(self):
+        self.headers = {
+            "User-Agent": "Mozilla/5.0 (Linux; Android 10; Kodi) AppleWebKit/537.36 Chrome/120.0"
+        }
+
+    def soup(self, html):
+        return BeautifulSoup(html, "html.parser")
+
+    def episodios(self, url):
+        """
+        Retorna lista de episódios:
+        [(titulo, link), ...]
+        """
+        try:
+            r = requests.get(url, headers=self.headers, timeout=15)
+            r.raise_for_status()
+            html = r.text
+
+            m = re.search(r"const allEpisodes\s*=\s*(\[[\s\S]*?\]);", html)
+            if not m:
+                return [], False, None
+
+            eps = json.loads(m.group(1).replace("\\/", "/"))
+            eps.sort(key=lambda e: int(e.get("episodio", 0)))
+
+            result = []
+            for ep in eps:
+                title = f"Episódio {int(ep['episodio']):02d} - {ep.get('audio', '')}"
+                link = urljoin(BASE, ep.get("id", ""))
+                result.append((title, link))
+
+            return result, False, None
+        except Exception as e:
+            print(f"[❌ Hinata] Erro ao pegar episódios: {e}")
+            return [], False, None
+
+    def resolver(self, url):
+        """
+        Resolve link final do episódio (Blogger → GoogleVideo)
+        """
+        try:
+            r = requests.get(url, headers=self.headers, timeout=15)
+            r.raise_for_status()
+            html = r.text
+
+            # fallback direto
+            link = extract_blogger_googlevideo(html)
+            if link:
+                return link
+            return None
+        except Exception as e:
+            print(f"[❌ Hinata] Erro ao resolver episódio: {e}")
+            return None
+
+# ==================================================
+# CARREGA REGRAS DO JSON
+# ==================================================
+def load_rules():
+    path = os.path.join(RULES_DIR, "goyabu.json")
+    if not os.path.exists(path):
+        return {}
+    with open(path, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+# ==================================================
+# PEGA LISTA DE ANIMES
+# ==================================================
+def get_anime_list(page=1):
+    rules = load_rules()
+    url = f"{BASE}/lista-de-animes/page/{page}?l=todos&pg={page}"
+    try:
+        r = requests.get(url, timeout=15)
+        r.raise_for_status()
+        html = r.text
+    except Exception as e:
+        print(f"[🌐 LIST] Erro ao buscar página {page}: {e}")
+        return []
+
+    if len(html) < 500:
+        print(f"[🌐 LIST] HTML inválido na página {page}")
+        return []
+
+    soup = BeautifulSoup(html, "html.parser")
+    card_selector = rules.get("anime_card", "article")
+    link_selector = rules.get("anime_link", "a[href]")
+
+    cards = soup.select(card_selector)
+    animes = []
+    seen_urls = set()
+
+    for card in cards:
+        a = card.select_one(link_selector)
+        if not a or not a.get("href"):
+            continue
+
+        name = a.get_text(" ", strip=True)
+        link = urljoin(BASE, a["href"])
+        if len(name) < 2 or link in seen_urls:
+            continue
+
+        seen_urls.add(link)
+        animes.append({
+            "name": f"🌐 {name}",
+            "url": link,
+            "normalized_name": normalize_title(name)
+        })
+
+    print(f"🌐 [LIST] Página {page}: {len(animes)} animes encontrados")
+    return animes
+
+# ==================================================
+# PROCESSA TODOS OS ANIMES E EPISÓDIOS
+# ==================================================
+def process_animes():
+    scraper = Hinata()
+    final_result = {}
+
+    for page in range(1, 3):  # pegar primeiras 2 páginas como exemplo
+        anime_list = get_anime_list(page)
+        for anime in anime_list:
+            anime_name = anime["name"]
+            final_result[anime_name] = {}
+            print(f"\n🌐 Iniciando coleta do anime: {anime_name}")
+
+            try:
+                eps, _, _ = scraper.episodios(anime["url"])
+                total_eps = len(eps)
+                resolved_eps = 0
+
+                for ep in eps:
+                    ep_title = ep[0]
+                    ep_url = ep[1]
+
+                    try:
+                        # Requisição do episódio
+                        r = requests.get(ep_url, timeout=15)
+                        r.raise_for_status()
+                        html = r.text
+
+                        # Salva HTML local
+                        save_html(html, f"{anime_name}_{ep_title}")
+
+                        # Resolve link
+                        link = scraper.resolver(ep_url)
+                        if not link:
+                            link = extract_blogger_googlevideo(html)
+                        if not link:
+                            link = "Link não encontrado"
+
+                        # Normaliza título e remove "EP" ou "Episódio"
+                        clean_title = normalize_title(ep_title)
+                        final_result[anime_name][f"📺 {ep_title}"] = {
+                            "url": link,
+                            "normalized_title": f"{anime_name} {clean_title}"
+                        }
+
+                        resolved_eps += 1
+
+                        # 🔥 Log de progresso
+                        print(
+                            f"{anime_name} | 📺 {ep_title} | "
+                            f"✅ Resolvidos: {resolved_eps}/{total_eps} | "
+                            f"⚡ Progresso: {resolved_eps/total_eps*100:.1f}%"
+                        )
+
+                    except Exception as e:
+                        print(f"[❌ ERRO] {anime_name} | 📺 {ep_title} | {e}")
+                        final_result[anime_name][f"📺 {ep_title}"] = {"url": None, "error": str(e)}
+
+            except Exception as e:
+                print(f"[❌ ERRO] Falha ao coletar episódios de {anime_name}: {e}")
+
+    save_json(final_result)
+
+# ==================================================
+# EXECUÇÃO PRINCIPAL
+# ==================================================
 if __name__ == "__main__":
-    anime_url = f"{BASE_URL}/anime/black-clover-dublado"
-
-    html = fetch_html(anime_url)
-    save_html(html, "anime_black_clover")
-
-    prompt = f"""
-Responda apenas com JSON puro.
-Você é uma IA especialista em scraping adaptativo.
-
-Objetivo:
-- Detectar container da lista de episódios
-- Detectar link de cada episódio
-- Retornar null se não existir
-
-HTML:
-{html[:80000]}
-"""
-
-    # 🔹 Uso da API oficial google-genai
-    response = client.models.generate_content(
-        model=MODEL,
-        contents=[{"type": "text", "text": prompt}]
-    )
-    rules = extract_json(response.last["content"][0]["text"])  # ✅ pega o texto correto
-
-    rules_file = os.path.join(RULES_DIR, "goyabu.json")
-    with open(rules_file, "w", encoding="utf-8") as f:
-        json.dump(rules, f, indent=2, ensure_ascii=False)
-
-    print(f"\n[IA] Regras salvas em {rules_file}")
-    print(json.dumps(rules, indent=2, ensure_ascii=False))
+    process_animes()
