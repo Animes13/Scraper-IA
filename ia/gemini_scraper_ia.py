@@ -74,8 +74,7 @@ HTML:
     )
 
     # ✅ pegar o texto retornado do modelo (CORRETO)
-    # Substituímos output_text por result[0].content[0].text
-    rules_text = response.result[0].content[0].text
+    rules_text = response.text  # 👈 aqui é a mudança principal
     rules = extract_json(rules_text)
 
     rules_file = os.path.join(RULES_DIR, "goyabu.json")
