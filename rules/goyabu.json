@@ -1,15 +1,16 @@
 {
   "anime_page": {
-    "episode_list_container": ".episodes-grid",
-    "episode_link": ".episodes-grid .episode-item"
+    "episode_list_container": {
+      "selector": ".episodes-grid"
+    },
+    "episode_link": {
+      "selector": "a.episode-item",
+      "attribute": "href"
+    }
   },
   "episode_page": {
-    "player_button": {
-      "selector": "#player-preview-image",
-      "src": "https://goyabu.io/wp-content/uploads/2023/07/Black-Clover-Dublado-Todos-os-Episodios-Online-Goyabu.jpg",
-      "alt": null
-    },
-    "player_iframe_url": null,
+    "player_button": null,
+    "iframe_player": null,
     "blogger_url": null
   },
   "episode_links_detected": [
