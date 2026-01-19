@@ -1,14 +1,7 @@
 {
   "anime_page": {
-    "episode_list_container": {
-      "selector": "div.episodes-list",
-      "type": "css"
-    },
-    "episode_link": {
-      "selector": "a.episode-item",
-      "type": "css",
-      "attribute": "href"
-    }
+    "episode_list_container_selector": "div.episodes-list",
+    "episode_link_selector": "a.episode-item"
   },
   "episode_page": {
     "playerButton": null,
