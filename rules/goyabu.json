@@ -1,29 +1,44 @@
 {
   "anime_page": {
-    "episodeListContainer": null,
-    "episodeLink": null
+    "container_selector": "#episodes-list",
+    "episode_link_selector": "a.episode-item",
+    "result": [
+      "https://goyabu.io/episodio/black-clover-dublado-episodio-1-online/",
+      "https://goyabu.io/episodio/black-clover-dublado-episodio-2-online/",
+      "https://goyabu.io/episodio/black-clover-dublado-episodio-3-online/",
+      "https://goyabu.io/episodio/black-clover-dublado-episodio-4-online/",
+      "https://goyabu.io/episodio/black-clover-dublado-episodio-5-online/",
+      "https://goyabu.io/episodio/black-clover-dublado-episodio-6-online/",
+      "https://goyabu.io/episodio/black-clover-dublado-episodio-7-online/",
+      "https://goyabu.io/episodio/black-clover-dublado-episodio-8-online/",
+      "https://goyabu.io/episodio/black-clover-dublado-episodio-9-online/",
+      "https://goyabu.io/episodio/black-clover-dublado-episodio-10-online/",
+      "https://goyabu.io/episodio/black-clover-dublado-episodio-11-online/",
+      "https://goyabu.io/episodio/black-clover-dublado-episodio-12-online/",
+      "https://goyabu.io/episodio/black-clover-dublado-episodio-13-online/",
+      "https://goyabu.io/episodio/black-clover-dublado-episodio-14-online/",
+      "https://goyabu.io/episodio/black-clover-dublado-episodio-15-online/",
+      "https://goyabu.io/episodio/black-clover-dublado-episodio-16-online/",
+      "https://goyabu.io/episodio/black-clover-dublado-episodio-17-online/",
+      "https://goyabu.io/episodio/black-clover-dublado-episodio-18-online/",
+      "https://goyabu.io/episodio/black-clover-dublado-episodio-19-online/",
+      "https://goyabu.io/episodio/black-clover-dublado-episodio-20-online/",
+      "https://goyabu.io/episodio/black-clover-dublado-episodio-21-online/",
+      "https://goyabu.io/episodio/black-clover-dublado-episodio-22-online/",
+      "https://goyabu.io/episodio/black-clover-dublado-episodio-23-online/",
+      "https://goyabu.io/episodio/black-clover-dublado-episodio-24-online/",
+      "https://goyabu.io/episodio/black-clover-dublado-episodio-25-online/",
+      "https://goyabu.io/episodio/black-clover-dublado-episodio-26-online/",
+      "https://goyabu.io/episodio/black-clover-dublado-episodio-27-online/",
+      "https://goyabu.io/episodio/black-clover-dublado-episodio-28-online/",
+      "https://goyabu.io/episodio/black-clover-dublado-episodio-29-online/",
+      "https://goyabu.io/episodio/black-clover-dublado-episodio-30-online/"
+    ]
   },
   "episode_page": {
-    "player_buttons": [
-      {
-        "text": "Player HD",
-        "selector": "button.player-tab[data-player-index=\"0\"]",
-        "player_type": "iframe",
-        "original_index": null,
-        "blogger_url": "https://www.blogger.com/video.g?token=AD6D5wdP_6NxAN4puOYbXxYC1XyxBXnqXdqJBGXSyexhFnWhvt6NLQ_yqW9fGjRjexRm1F0j2nBpx3EdG-0vy9FKfJwqJRLmkahkpnulJ4htZ0TvdfyAiF9Czqv8JVbncWDHDPCHoWCA"
-      },
-      {
-        "text": "Player FHD",
-        "selector": "button.player-tab[data-player-index=\"1\"]",
-        "player_type": null,
-        "original_index": "0",
-        "blogger_url": null
-      }
-    ],
-    "player_iframe": {
-      "url": "https://www.blogger.com/video.g?token=AD6D5wdP_6NxAN4puOYbXxYC1XyxBXnqXdqJBGXSyexhFnWhvt6NLQ_yqW9fGjRjexRm1F0j2nBpx3EdG-0vy9FKfJwqJRLmkahkpnulJ4htZ0TvdfyAiF9Czqv8JVbncWDHDPCHoWCA"
-    },
-    "blogger_url": "https://www.blogger.com/video.g?token=AD6D5wdP_6NxAN4puOYbXxYC1XyxBXnqXdqJBGXSyexhFnWhvt6NLQ_yqW9fGjRjexRm1F0j2nBpx3EdG-0vy9FKfJwqJRLmkahkpnulJ4htZ0TvdfyAiF9Czqv8JVbncWDHDPCHoWCA"
+    "player_button_selector": ".player-tab",
+    "player_iframe_selector": "#player iframe",
+    "blogger_url": "https://www.blogger.com/video.g?token=AD6v5dwP_6NaxNOuYbxXC1XyxnXJdqXBGXyESWnhv6tNLQB_qyW9fGjRjxRme1F0j2Bnpe3DGd-02y9FKLmvJRmLhapknulJ4hkZT0f_dvAiFyCkzq_8OJVbnDW0HDPBWnCA"
   },
   "episode_links_detected": [
     "https://goyabu.io/37475",
