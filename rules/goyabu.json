@@ -1,14 +1,13 @@
 {
   "anime_page": {
-    "container": "div.episodes-list",
-    "links": [
-      "https://goyabu.io/episodio/black-clover-dublado-episodio-1"
-    ]
+    "episodeListContainer": "div.episodes-slide",
+    "episodeItem": "div.episode-item",
+    "episodeLink": "a[href]"
   },
   "episode_page": {
-    "playerButton": null,
-    "playerIframe": null,
-    "bloggerUrl": null
+    "player_button": null,
+    "iframe_player": null,
+    "blogger_url": null
   },
   "episode_links_detected": [
     "https://goyabu.io/37475",
