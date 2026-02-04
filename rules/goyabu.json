@@ -1,12 +1,19 @@
 {
   "anime_page": {
-    "container_selector": ".episodes-grid",
-    "episode_link_selector": ".episode-item > a.boxEP"
+    "episode_list_container": {
+      "selector": "div[class*=\"episodes-\"] div.episode-item",
+      "type": "css"
+    },
+    "episode_link": {
+      "selector": "a",
+      "type": "css",
+      "attribute": "href"
+    }
   },
   "episode_page": {
-    "player_button_selector": null,
-    "player_iframe_selector": null,
-    "blogger_url": null
+    "botão_player": null,
+    "iframe_player": null,
+    "url_blogger": null
   },
   "episode_links_detected": [
     "https://goyabu.io/37475",
