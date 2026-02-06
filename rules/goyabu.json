@@ -1,7 +1,7 @@
 {
   "anime_page": {
-    "container": "div.episodes-list",
-    "episodes": {
+    "episodeListContainer": "div.episodes-list",
+    "episodeLink": {
       "selector": "a.episode-item",
       "attribute": "href"
     }
