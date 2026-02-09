@@ -1,12 +1,15 @@
 {
   "anime_page": {
     "episodeListContainer": "div.episodes-list",
-    "episodeLink": "a.episode-item"
+    "episodeLink": {
+      "selector": "a.episode-item",
+      "attribute": "href"
+    }
   },
   "episode_page": {
-    "player_button": null,
-    "player_iframe": null,
-    "blogger_url": null
+    "playerButton": null,
+    "playerIframe": null,
+    "bloggerUrl": null
   },
   "episode_links_detected": [
     "https://goyabu.io/37475",
