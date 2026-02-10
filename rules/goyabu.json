@@ -1,13 +1,13 @@
 {
   "anime_page": {
-    "episode_list_container_selector": "div.episodes-grid, div.episodes-list, div.episodes-minimal",
-    "episode_link_selector": "a.episode-item, .episode-item a",
-    "comment": "Os seletores foram inferidos a partir das classes CSS fornecidas no HTML, que descrevem diferentes tipos de listas de episódios e itens individuais."
+    "list_container_selector": "div.episodes-list",
+    "episode_link_selector": "a.episode-item",
+    "episode_link_attribute": "href"
   },
   "episode_page": {
-    "player_button_selector": "div#player-button",
-    "player_iframe_url": "https://player-ads.bloggersafe.io/2023/10/player.html?id=331330436",
-    "is_blogger_url": true
+    "playerButton": null,
+    "playerIframe": null,
+    "bloggerUrl": null
   },
   "episode_links_detected": [
     "https://goyabu.io/37475",
