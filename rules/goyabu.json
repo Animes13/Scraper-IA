@@ -1,25 +1,15 @@
 {
   "anime_page": {
-    "episode_list_container": null,
-    "episode_link_selector": null
+    "episode_list_container_selector": "div.episodes-list",
+    "episode_link_selector": "a.episode-item"
   },
   "episode_page": {
-    "player_button": [
-      {
-        "text": "Player 1",
-        "data_player_id": "1"
-      },
-      {
-        "text": "Player 2",
-        "data_player_id": "2"
-      },
-      {
-        "text": "Player 3",
-        "data_player_id": "3"
-      }
-    ],
-    "player_iframe_url": null,
-    "blogger_url": null
+    "playerButton": {
+      "selector": "#playButton",
+      "text": "Assistir"
+    },
+    "playerIframe": null,
+    "bloggerUrl": null
   },
   "episode_links_detected": [
     "https://goyabu.io/37475",
