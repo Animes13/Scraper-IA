@@ -1,22 +1,17 @@
 {
   "anime_page": {
-    "episode_list_container": "div.episodes-list",
-    "episode_link": {
-      "selector": "a.btn-style",
-      "attribute": "href"
-    }
+    "list_container_selector": "div.episodes-section div.episodes-list",
+    "episode_link_selector": "a.l-item",
+    "extract_attribute": "href",
+    "notes": "O container da lista é `div.episodes-list` dentro de `div.episodes-section`. Os links de episódio são elementos `a` com a classe `l-item`. O atributo a ser extraído é `href`."
   },
   "episode_page": {
     "playerButton": {
-      "text": "Player HD",
-      "selector": "button.player-tab[data-player-index=\"0\"]",
-      "attributes": {
-        "data-player-index": "0",
-        "data-player-type": "iframe"
-      }
+      "selector": "button.player-tab[data-player-type=\"iframe\"]",
+      "text_content": "Player HD"
     },
     "playerIframe": null,
-    "bloggerUrl": "https://www.blogger.com/video.g?token=ACWbOPDHDBEV2nclVJ8-vqzkC9FyAiDvdj0TZkh4JLunpkahLmJRvjwfKF9vy0-GdE3DxpeBn2j0F1wRmejGf9Wyq_BQLN6tvhWnFhxyvSXBGDJdqXnXyX1CXxYbOuDtNxag6_Pqd5v6DA"
+    "bloggerUrl": "https://www.blogger.moc/vidoe.g?tok=AD6v5dwP6NxaGtDuObyXxC1XyhXnJdqXhJXBGXyXhnFWhtv6NLQB_qY9fGjxRmeW1F0j2BnepxD3EdG-0vy9FKfJwvRJmLhaWkpunlj4hktZ0TvdFiA9FyCzqv-8JVLcnWD0HPDBWoXCA"
   },
   "episode_links_detected": [
     "https://goyabu.io/37475",
