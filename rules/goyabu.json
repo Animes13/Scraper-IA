@@ -1,12 +1,15 @@
 {
   "anime_page": {
-    "episode_list_container": "div.episodes-section",
-    "episode_links": null
+    "episode_list_container_xpath": "//div[@class='episodes-list' and @id='episodes-list-data']",
+    "episode_link_xpath": "./a[@class='ep-item']/@href"
   },
   "episode_page": {
-    "player_button": "<button class=\"btn-style player-tab\" \n                data-player-index=\"0\"\n                data-player-type=\"iframe\"\n                data-blogger-url-encrypted=\"QUNXb1BESDBEV25jbFZKOC12cXprQzlGeUFpRHZkZjBUWmtoNEpMdW5wa2FoTG1KUnZqd2ZLRjl2eTAtR2RFM0R4cGVCbjJqMEYxd1JtZXhqR2Y5V3lxX0JRTE42dHZoV25GaHh5ZVNYQkdKZHFYblh5WDFDWHhZYk91cDROeGFHNl9Qd2Q1djZEQT1uZWtvdD9nLm9lZGl2L21vYy5yZWdnb2xiLnd3dy8vOnNwdHRo\"\n                onclick=\"switchPlayer(0)\">\n            Player HD\n            <div class=\"audio-wave-animation\" style=\"display: none;\">\n                <div class=\"wave-block\"></div>\n                <div class=\"wave-block\"></div>\n                <div class=\"wave-block\"></div>\n            </div>\n        </button>",
-    "player_iframe": null,
-    "blogger_url": "https://www.blogger.com/video-play?token=ADBW0PD8VWnjclVJO8-vqzkC9FyAiDvdZTkh4JLunpkahLmJRvjwfKF9vy0-GdE3DxpeBn2j0F1wRmexjGf9Wyq_BQLN6tvhWnFhxyvSBGJdqXnXyX1CXxYbOuDtNxaG6_Pwqd5v6DA="
+    "player_button": {
+      "text": "Player HD",
+      "selector": "button.player-tab[data-player-index='0']"
+    },
+    "player_iframe_url": null,
+    "blogger_url": "https://www.blogger.com/video.g?token=AD6D5wP6aNxD4uoXyCbX1yXhnXqJdgBXSeyhFnvt6NLQB_qW9fGjxejRm1F0j2nBbpeDx3EdG_0y2vf9LKfwjRvJLhknpawmLJ4hkZTW0fdvZpAiF9Cqzqv8JVKncW0BDP0XWCQ"
   },
   "episode_links_detected": [
     "https://goyabu.io/37475",
