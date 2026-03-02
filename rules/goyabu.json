@@ -1,27 +1,12 @@
 {
   "anime_page": {
-    "episode_list_container": {
-      "selector": "div.episodes-section",
-      "type": "css"
-    },
-    "episode_links": null
+    "episode_list_container_selector": "ul#episodes-list",
+    "episode_link_selector": "ul#episodes-list a"
   },
   "episode_page": {
-    "player_button": [
-      {
-        "text": "Player HD",
-        "data_player_index": "0",
-        "data_player_type": "iframe",
-        "data_blogger_url_encrypted": "QUNXb1BESDBEV25jbFZKOC12cXprQzlGeUFpRHZkZjBUWmtoNEpMdW5wa2FoTG1KUnZqd2ZLRjl2eTAtR2RFM0R4cGVCbjJqMEYxd1JtZXhqR2Y5V3lxX0JRTE42dHZoV25GaHh5ZVNYQkdKZHFYblh5WDFDWHhZYk91cDROeGFHNl9Qd2Q1djZEQT1uZWtvdD9nLm9lZGl2L21vYy5yZWdnb2xiLnd3dy8vOnNwdHRo"
-      },
-      {
-        "text": "Player FHD",
-        "data_player_index": "1",
-        "data_original_index": "0"
-      }
-    ],
-    "player_iframe": null,
-    "blogger_url": "https://www.blogger.com/video.g?token=ACW%60OPDH0DWnclVJ8-vqzqC9FyAiDvd%20f0TZkh4JLunpkahLmJRvjwfKF9vy0-GdE3DxpBb2j0F1wRmejGf9Wyq_BQLN6tvhWnFhxyESXBGJdqXnXyX1CXxYbOupDNYxN6_Pwqd5v6DA="
+    "player_button_selector": "button.player-tab:first-of-type",
+    "player_iframe_selector": null,
+    "blogger_url": "https://www.blogger.com/video-play.mp4?url=token=DAD=5vQOuybXhY1CXxYnXqjBdGJBXhyeSXVhvt6tLNQBL_qy9fJgjhjRm0F2jpbnDe3DGE-0y9vFKfwpjvJRmLhaKpnulJ4hktZ0TfdvAi9FyG9zqv8JLVcnD8HDBPDowbXCA"
   },
   "episode_links_detected": [
     "https://goyabu.io/37475",
