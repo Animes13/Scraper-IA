@@ -1,23 +1,30 @@
 {
   "anime_page": {
-    "container_selector": "div.episodes-section",
-    "link_selector": null
+    "episode_list_container": "div.episodes-list-content",
+    "episode_links": null
   },
   "episode_page": {
-    "player_buttons": [
+    "playerButtons": [
       {
         "text": "Player HD",
-        "type": "iframe",
-        "blogger_url_encrypted": "QUNXb1BESDBEV25jbFZKOC12cXprQzlGeUFpRHZkZjBUWmtoNEpMdW5wa2FoTG1KUnZqd2ZLRjl2eTAtR2RFM0R4cGVCbjJqMEYxd1JtZXhqR2Y5V3lxX0JRTE42dHZoW25GaHh5ZVNYQkdKZHFYblh5WDFDWHhZYk91cDROeGFGNl9Qd2Q1djZEQT1uZWtvdD9nLm9lZGl2L21vYy5yZWdnb2xiLnd3dy8vOnNwdHRo"
+        "playerIndex": "0",
+        "playerType": "iframe",
+        "bloggerUrlEncrypted": "QUNXb1BESDBEV25jbFZKOC12cXprQzlGeUFpRHZkZjBUWmtoNEpMdW5wa2FoTG1KUnZqd2ZLRjl2eTAtR2RFM0R4cGVCbjJqMEYxd1JtZXhqR2Y5V3lxX0JRTE42dHZoV25GaHh5ZVNYQkdKZHFYblh5WDFDWHhZYk91cDROeGFHNl9Qd2Q1djZEQT1uZWtvdD9gLm9lZGl2L21vYy5yZWdnb2xiLnd3dy8vOnNwdHRo",
+        "bloggerUrlDecrypted": "https://www.blogger.com/video.g?token=5D6vdP6NxaNOuYbxX1CyXnhqdJGBSXehyWnhFvht6NLQB_qYw9GjxhjRme1F0j2nbPxh3EDg_0dEG_0yv9FKfzwJrvRLmhkpwnuLJh4Tz0fvdAiF9eCzqk_8JLVnWD0DHBOPXWCA"
       },
       {
         "text": "Player FHD",
-        "type": null,
-        "blogger_url_encrypted": null
+        "playerIndex": "1",
+        "playerType": null,
+        "bloggerUrlEncrypted": null,
+        "bloggerUrlDecrypted": null
       }
     ],
-    "player_iframe": null,
-    "blogger_url_encrypted": "QUNXb1BESDBEV25jbFZKOC12cXprQzlGeUFpRHZkZjBUWmtoNEpMdW5wa2FoTG1KUnZqd2ZLRjl2eTAtR2RFM0R4cGVCbjJqMEYxd1JtZXhqR2Y5V3lxX0JRTE42dHZoW25GaHh5ZVNYQkdKZHFYblh5WDFDWHhZYk91cDROeGFGNl9Qd2Q1djZEQT1uZWtvdD9nLm9lZGl2L21vYy5yZWdnb2xiLnd3dy8vOnNwdHRo"
+    "playerIframe": {
+      "src": "https://www.blogger.com/video.g?token=5D6vdP6NxaNOuYbxX1CyXnhqdJGBSXehyWnhFvht6NLQB_qYw9GjxhjRme1F0j2nbPxh3EDg_0dEG_0yv9FKfzwJrvRLmhkpwnuLJh4Tz0fvdAiF9eCzqk_8JLVnWD0DHBOPXWCA",
+      "bloggerDetected": true
+    },
+    "bloggerUrl": "https://www.blogger.com/video.g?token=5D6vdP6NxaNOuYbxX1CyXnhqdJGBSXehyWnhFvht6NLQB_qYw9GjxhjRme1F0j2nbPxh3EDg_0dEG_0yv9FKfzwJrvRLmhkpwnuLJh4Tz0fvdAiF9eCzqk_8JLVnWD0DHBOPXWCA"
   },
   "episode_links_detected": [
     "https://goyabu.io/37475",
