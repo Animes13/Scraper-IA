@@ -1,14 +1,14 @@
 {
-  "stream:anime_card": -186515,
-  "stream:anime_link": -186476,
+  "stream:anime_card": -186514,
+  "stream:anime_link": -186475,
   "stream:episode_js_key": -186666,
-  "stream:player_button": -186472,
+  "stream:player_button": -186471,
   "stream:blogger_regex": -186666,
-  "episode_list:player_button": 4667,
-  "anime_list:player_button": 194,
-  "stream:anime_page": -8917642,
-  "stream:episode_page": -8917642,
-  "stream:episode_links_detected": -8917642,
-  "episode_list:anime_link": 4571,
-  "anime_list:anime_link": 190
+  "episode_list:player_button": 4691,
+  "anime_list:player_button": 195,
+  "stream:anime_page": -8964844,
+  "stream:episode_page": -8964844,
+  "stream:episode_links_detected": -8964844,
+  "episode_list:anime_link": 4595,
+  "anime_list:anime_link": 191
 }
