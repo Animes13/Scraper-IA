@@ -4,13 +4,22 @@
     "episode_links": null
   },
   "episode_page": {
-    "player_button": {
-      "selector": "button.player-tab[data-player-type=\"iframe\"][data-player-index=\"0\"]",
-      "text": "Player HD",
-      "html": "<button class=\"btn-style player-tab\" \n                data-player-index=\"0\"\n                data-player-type=\"iframe\"\n                data-blogger-url-encrypted=\"QUNXb1BESDBEV25jbFZKOC12cXprQzlGeUFpRHZkZjBUWmtoNEpMdW5wa2FoTG1KUnZqd2ZLRjl2eTAtR2RFM0R4cGVCbjJqMEYxd1JtZXhqR2Y5V3lxX0JRTE42dHZoV25GaHh5ZVNYQkdKZHFYblh5WDFDWHhZYk91cDROeGFHNl9Qd2Q1djZEQT1uZWtvdD9nLm9lZGl2L21vYy5yZWdnb2xiLnd3dy8vOnNwdHRo\"\n                onclick=\"switchPlayer(0)\">\n            Player HD\n            <div class=\"audio-wave-animation\" style=\"display: none;\">\n                <div class=\"wave-block\"></div>\n                <div class=\"wave-block\"></div>\n                <div class=\"wave-block\"></div>\n            </div>\n        </button>"
+    "player_buttons": [
+      {
+        "text": "Player HD",
+        "type": "iframe",
+        "data_player_index": "0"
+      },
+      {
+        "text": "Player FHD",
+        "type": null,
+        "data_player_index": "1"
+      }
+    ],
+    "player_iframe": {
+      "src": "https://www.blogger.com/video.g?token=TAD5wd_6NaxNd4COuYbxX1yXnhdXqdzxhyhFnhWhtv6tNLQB_qyW9fGejxRmw1F0j2nBpeDx3EGD-0yv9FKfzwJmLhkaHpknuLJh4kZTV0fdvAiYF9Czqxv-8JVclnWHD0BPWnCAQ"
     },
-    "player_iframe": null,
-    "blogger_url": "https://www.blogger.com/video.g?token=TAD6dv5Pzwd9xYhXnYxXnhqdjGBXSeyhFnWhtv6NLQB_qYw9FjxqemR1wf0j2nbpXD3EdG_0yv9FLRfjwqrJnMLhaKpnulJ4htkZ0vjfdvDiAf9Ckzqcv1_8KJVlbcWv0DHPBwXNCQA"
+    "blogger_url": "https://www.blogger.com/video.g?token=TAD5wd_6NaxNd4COuYbxX1yXnhdXqdzxhyhFnhWhtv6tNLQB_qyW9fGejxRmw1F0j2nBpeDx3EGD-0yv9FKfzwJmLhkaHpknuLJh4kZTV0fdvAiYF9Czqxv-8JVclnWHD0BPWnCAQ"
   },
   "episode_links_detected": [
     "https://goyabu.io/37475",
