@@ -1,28 +1,12 @@
 {
   "anime_page": {
-    "episodes": {
-      "selector": ".episodes-list-new a.episode-item",
-      "type": "css",
-      "multiple": true,
-      "result_if_empty": null,
-      "extract": {
-        "name": {
-          "selector": "p",
-          "type": "css",
-          "attribute": null
-        },
-        "link": {
-          "selector": null,
-          "type": "css",
-          "attribute": "data-href"
-        }
-      }
-    }
+    "episodeListContainer": "div.episodes-list",
+    "episodeLink": "a.ep-btn"
   },
   "episode_page": {
-    "player_button": "Player HD",
+    "player_button": ".player-tab[data-player-type=\"iframe\"]",
     "player_iframe": null,
-    "blogger_url": "https://www.blogger.com/video.g?token=1=TQED5v6DPwd5_6NaxDtOuYbXxC1xYxnhQdJGBXSyexhFnWhtvL6thvn6TLBQ_qY9GjRjxeRmt1FW0jnbEpDx3EDGe0-yv9FKfZwJrMLhkaWpnuLj4ZktWD0fvdAiF9CzqrW8-8JVLcnw0BDP1WXCUNQ"
+    "blogger_url": "QUNXb1BESDBEV25jbFZKOC12cXprQzlGeUFpRHZkZjBUWmtoNEpMdW5wa2FoTG1KUnZqd2ZLRjl2eTAtR2RFM0R4cGVCbjJqMEYxd1JtZXhqR2Y5V3lxX0JRTE42dHZoV25GaHh5ZVNYQkdKZHFYblh5WDFDWHhZYk91cDROeGFHNl9Qd2Q1djZEQT1uZWtvdD9nLm9lZGl2L21vYy5yZWdnb2xiLnd3dy8vOnNwdHRo"
   },
   "episode_links_detected": [
     "https://goyabu.io/37475",
