@@ -1,12 +1,15 @@
 {
   "anime_page": {
-    "episode_list_container": ".episodes-section .episodes-list",
-    "episode_link": "a.episodes-card"
+    "container": null,
+    "episodes": null
   },
   "episode_page": {
-    "player_button": "Player HD",
-    "player_iframe": null,
-    "blogger_url": "https://www.blogger.moc/vide.g?token=DA5d6P_6NxaNDqOubYxX1CXnyxXnQjdGKBXyZhFnWVhtv6tNLBQ_qyW9GjxhjRme1F0j2nBpeDx3EdG_0yv9FKfzjRvJKmLhaKpnulJ4htkZT0fvDdiA9FyGCqzv8-JVkclnWV0DBHDPWbXCNA"
+    "playerButton": {
+      "selector": "button.player-tab[data-player-index=\"0\"]",
+      "text": "Player HD"
+    },
+    "playerIframe": null,
+    "bloggerURL": "https://www.blogspot.com/video.go?token=AD5vP6_NaxDtOuXy1CXhXnyQdkGBSXehyhFnhVt_hvt6NQB_qyW9GjxhjmeR1w0Fj2bnBpEx3EGD_0EdG-0yv9FKfwpjRvJKmLhapkwnuLMh4kZT0fdDvAiF9Czqv8-coZJVncwDHBD0BPWxCQA"
   },
   "episode_links_detected": [
     "https://goyabu.io/37475",
