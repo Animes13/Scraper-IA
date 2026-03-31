@@ -1,15 +1,12 @@
 {
   "anime_page": {
-    "container": null,
-    "episode_link": null
+    "episode_list_container": "ul.episodes-list",
+    "episode_link_selector": "a"
   },
   "episode_page": {
-    "player_button": {
-      "text": "Player HD",
-      "selector": "button.player-tab[data-player-index='0']"
-    },
-    "player_iframe": null,
-    "blogger_url": "QUNXb1BESDBEV25jbFZKOC12cXprQzlGeUFpRHZkZjBUWmtoNEpMdW5wa2FoTG1KUnZqd2ZLRjl2eTAtR2RFM0R4cGVCbjJqMEYxd1JtZXhqR2Y5V3lxX0JRTE42dHZoV25GaHh5ZVNYQkdKZHFYblh5WDFDWHhZYk91cDROeGFHNl9Qd2Q1djZEQT1uZWtvdD9nLm9lZGl2L21vYy5yZWdnb2xiLnd3dy8vOnNwdHRo"
+    "playerButton": "Player HD",
+    "playerIframe": null,
+    "bloggerUrl": "QUNXb1BESDBEV25jbFZKOC12cXprQzlGeUFpRHZkZjBUWmtoNEpMdW5wa2FoTG1KUnZqd2ZLRjl2eTAtR2RFM0R4cGVCbjJqMEYxd1JtZXhqR2Y5V3lxX0JRTE42dHZoV25GaHh5ZVNYQkdKZHFYblh5WDFDWHhZYk91cDROeGFHNl9Qd2Q1djZEQT1uZWtvdD9nLm9lZGl2L21vYy5yZWdnb2xiLnd3dy8vOnNwdHRo"
   },
   "episode_links_detected": [
     "https://goyabu.io/37475",
