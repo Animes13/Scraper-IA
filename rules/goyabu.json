@@ -1,12 +1,23 @@
 {
   "anime_page": {
-    "episodeListContainer": "div.episodes-section",
-    "episodeLink": null
+    "episodeListContainer": {
+      "selector": ".episodes-section .episodes-list",
+      "attribute": null,
+      "value": null
+    },
+    "episodeLink": {
+      "selector": ".episodes-section .episodes-list a.episodes-card",
+      "attribute": "href",
+      "value": "https://goyabu.io/anime/black-clover-dublado-online/episodio-1"
+    }
   },
   "episode_page": {
-    "player_button_selector": "button.player-tab:nth-of-type(1)",
-    "player_iframe_selector": "#player iframe",
-    "blogger_url": "https://www.blogger.com/video.g?token=ACWbOPDH0DWnclVJ8-vqzkC9FyAiDvd f0TZkh4JLunpkahLmJRvjWfKF9vy0-GdE3DxpeBn2j0F1wRmehjGf9Wyq_BQLN6tvhWnFhxyESXBGJdqXnXyX1CXxYbOupD4Nxag6_Pwd5v6DA="
+    "player_button": {
+      "text": "Player HD",
+      "selector": "button.player-tab[data-player-index=\"0\"]"
+    },
+    "iframe_player": null,
+    "blogger_url": "https://www.blogger.com/video.g?ACXb1PDH0DWnc_VJ8-vqzqC9FyAiDvd f0TZkh4JLunpkahLmJrvjwfKF9vy0-GdE3DxpeBn2j0F1wRmejGf9Wyx_BQLN6tvhWnFhxy_SBGJdqXnXyX1CXxYbOupD NxaG6_Pwd5v6DA="
   },
   "episode_links_detected": [
     "https://goyabu.io/37475",
