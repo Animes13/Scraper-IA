@@ -1,13 +1,15 @@
 {
   "anime_page": {
-    "episode_list_container_selector": null,
-    "episode_link_selector": null
+    "episodeListContainer": null,
+    "episodeLinks": null
   },
   "episode_page": {
     "player_button": {
       "selector": "button.player-tab",
-      "exists": true,
-      "details": "A player selection button was detected, but its full attributes and text content are truncated in the provided HTML."
+      "classes": [
+        "btn-style",
+        "player-tab"
+      ]
     },
     "player_iframe": null,
     "blogger_url": null
