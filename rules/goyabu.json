@@ -1,6 +1,9 @@
 {
   "anime_page": {
-    "episode_list_container_selector": "#episodes-container",
+    "episode_list_container": {
+      "selector": "div.episodes-slide#episodes-container",
+      "notes": "O container HTML com ID 'episodes-container' é onde a lista de episódios é dinamicamente renderizada via JavaScript. Os dados dos episódios são pré-carregados no HTML dentro de uma tag <script> na variável `allEpisodes`."
+    },
     "episode_links": [
       "https://goyabu.io/37475",
       "https://goyabu.io/37476",
@@ -129,15 +132,11 @@
       "https://goyabu.io/37600",
       "https://goyabu.io/37601",
       "https://goyabu.io/37602",
-      "https://goyabu.io/37603",
-      "https://goyabu.io/37604"
+      "https://goyabu.io/37603"
     ]
   },
   "episode_page": {
-    "player_button": {
-      "selector": "button.player-tab[data-player-type=\"iframe\"]",
-      "text": "Player HD"
-    },
+    "player_button_text": "Player HD",
     "player_iframe_url": null,
     "blogger_url": "https://www.blogger.com/video.g?token=AD6v5dwP_6GaxN4puObYxXC1XyXnXqdJGBXSeyxhFnWhvt6NLQB_qyW9fGjxemRw1F0j2nBepxD3EdG-0yv9FKfwjvRJmLhakpnuLJ4hkZT0fdvDiAyF9Ckzqv-8JVlcnWD0HDPoWCA"
   },
