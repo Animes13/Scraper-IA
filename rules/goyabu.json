@@ -4,13 +4,7 @@
     "episodeLink": null
   },
   "episode_page": {
-    "player_button": {
-      "found": true,
-      "selector": "button.player-tab",
-      "url": null,
-      "text": null,
-      "title": null
-    },
+    "player_button": null,
     "player_iframe": null,
     "blogger_url": null
   },
