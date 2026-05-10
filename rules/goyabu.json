@@ -4,38 +4,9 @@
     "episode_link": null
   },
   "episode_page": {
-    "player_buttons": [
-      {
-        "text": "Player 1",
-        "data_player_id": "player_1"
-      },
-      {
-        "text": "Player 2",
-        "data_player_id": "player_2"
-      },
-      {
-        "text": "Player 3",
-        "data_player_id": "player_3"
-      },
-      {
-        "text": "Player 4",
-        "data_player_id": "player_4"
-      },
-      {
-        "text": "Player 5",
-        "data_player_id": "player_5"
-      },
-      {
-        "text": "Player 6",
-        "data_player_id": "player_6"
-      },
-      {
-        "text": "Player 7",
-        "data_player_id": "player_7"
-      }
-    ],
-    "player_iframe": null,
-    "blogger_url": null
+    "player_button": null,
+    "player_iframe_url": null,
+    "blogger_url": "https://www.blogger.com"
   },
   "episode_links_detected": [
     "https://goyabu.io/37475",
