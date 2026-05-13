@@ -4,9 +4,9 @@
     "episodeLink": null
   },
   "episode_page": {
-    "player_button": null,
-    "player_iframe": null,
-    "blogger_url": "https://www.blogger.com"
+    "playerButton": null,
+    "playerIframe": null,
+    "bloggerUrl": null
   },
   "episode_links_detected": [
     "https://goyabu.io/37475",
