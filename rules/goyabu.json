@@ -1,7 +1,7 @@
 {
   "anime_page": {
-    "episode_list_container_selector": null,
-    "episode_link_selector": null
+    "container": null,
+    "episode_link": null
   },
   "episode_page": {
     "playerButton": null,
