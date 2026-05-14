@@ -1,12 +1,12 @@
 {
   "anime_page": {
-    "container": null,
+    "episodes_container": null,
     "episode_link": null
   },
   "episode_page": {
-    "playerButton": null,
-    "playerIframe": null,
-    "bloggerUrl": "https://www.blogger.com"
+    "player_button": null,
+    "player_iframe": null,
+    "blogger_url": null
   },
   "episode_links_detected": [
     "https://goyabu.io/37475",
@@ -179,7 +179,5 @@
     "https://goyabu.io/44344",
     "https://goyabu.io/44345",
     "https://goyabu.io/44346"
-  ],
-  "anime_link": "a[href]",
-  "player_button": "button.episodes-view-btn.btn-style"
+  ]
 }
