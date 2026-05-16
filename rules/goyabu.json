@@ -1,13 +1,20 @@
 {
   "anime_page": {
-    "episode_list_container_selector": "#episodes-list",
-    "episode_link_selector": "a.anime-episode",
-    "episode_link_attribute": "href"
+    "container_selector": "ul.selector-list.episode-list",
+    "link_selector": "li > a.selector-item"
   },
   "episode_page": {
-    "playerButton": null,
-    "playerIframe": null,
-    "bloggerUrl": null
+    "player_button": {
+      "text": "Player 1",
+      "selector": "button.player-tab.active",
+      "attribute": "data-player",
+      "value": "player_1"
+    },
+    "player_iframe": {
+      "src": "https://streamtape.com/e/Qz5W33y3YjU6qXw",
+      "selector": "iframe#video-player"
+    },
+    "blogger_url": "https://www.blogger.com/video-play.mp4?id=452449174092415170"
   },
   "episode_links_detected": [
     "https://goyabu.io/37475",
