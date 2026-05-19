@@ -4,17 +4,8 @@
     "episode_link_selector": null
   },
   "episode_page": {
-    "player_button": {
-      "text": "Yabuzin",
-      "data_player": {
-        "type": "iframe",
-        "src": "https://sbl.goyabu.com/player/?vid=MjQwOTM5&autostart=true",
-        "ads": false,
-        "autoplay": false,
-        "preload": false
-      }
-    },
-    "player_iframe_url": "https://sbl.goyabu.com/player/?vid=MjQwOTM5&autostart=true",
+    "player_button": null,
+    "player_iframe": null,
     "blogger_url": null
   },
   "episode_links_detected": [
