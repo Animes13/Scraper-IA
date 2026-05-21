@@ -1,11 +1,12 @@
 {
   "anime_page": {
-    "episode_list_container": null,
-    "episode_link_selector": null
+    "container": null,
+    "link": null
   },
   "episode_page": {
-    "player_button": null,
-    "player_iframe": null,
+    "player_button_text": "Player 1",
+    "player_button_url": "https://sblong.net/e/pbl18w0i04u3.html",
+    "iframe_url": null,
     "blogger_url": null
   },
   "episode_links_detected": [
