@@ -1,14 +1,17 @@
 {
   "anime_page": {
-    "episode_list_container": null,
-    "episode_link_selector": null
+    "episodeListContainer": null,
+    "episodeLink": null
   },
   "episode_page": {
     "player_button": {
-      "selector": "button.player-tab",
-      "exists": true
+      "tag": "button",
+      "classes": [
+        "btn-style",
+        "player-tab"
+      ]
     },
-    "iframe_player": null,
+    "player_iframe": null,
     "blogger_url": null
   },
   "episode_links_detected": [
