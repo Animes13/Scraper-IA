@@ -4,9 +4,9 @@
     "episode_links": null
   },
   "episode_page": {
-    "player_button_text": null,
-    "iframe_player_url": null,
-    "blogger_url": null
+    "playerButton": null,
+    "playerIframe": null,
+    "bloggerUrl": null
   },
   "episode_links_detected": [
     "https://goyabu.io/37475",
