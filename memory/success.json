@@ -1,27 +1,27 @@
 {
   "stream": {
-    "count": 510,
+    "count": 511,
     "rules": {
       "player_button": "button.episodes-view-btn.select-style.btn-style",
       "anime_link": "a[href]",
       "anime_card": "div.wave-block"
     },
-    "last_success": "2026-06-08T20:28:03.252517"
+    "last_success": "2026-06-09T04:16:41.661210"
   },
   "episode_list": {
-    "count": 12251,
+    "count": 12275,
     "rules": {
       "player_button": "button.share-button",
       "anime_link": "a[href]"
     },
-    "last_success": "2026-06-08T23:42:23.125897"
+    "last_success": "2026-06-09T06:22:03.121294"
   },
   "anime_list": {
-    "count": 510,
+    "count": 511,
     "rules": {
       "player_button": "button.btn-style.show-more-filter",
       "anime_link": "a[href]"
     },
-    "last_success": "2026-06-09T00:06:28.326998"
+    "last_success": "2026-06-09T06:36:13.202641"
   }
 }
