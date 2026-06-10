@@ -1,14 +1,18 @@
 {
   "anime_page": {
-    "container_xpath": "//div[@id='anime-ep-container']",
-    "episode_links": null
+    "container_selector": null,
+    "episode_link_selector": null
   },
   "episode_page": {
     "player_button": {
-      "selector": "button.player-tab",
-      "exists": true
+      "selector": "button.player-tab[data-player-index=\"0\"]",
+      "text": null,
+      "attributes": {
+        "class": "btn-style player-tab",
+        "data-player-index": "0"
+      }
     },
-    "player_iframe": null,
+    "player_iframe_url": null,
     "blogger_url": null
   },
   "episode_links_detected": [
