@@ -186,5 +186,7 @@
     "https://goyabu.io/44344",
     "https://goyabu.io/44345",
     "https://goyabu.io/44346"
-  ]
+  ],
+  "anime_link": "a[href]",
+  "player_button": "button.episodes-view-btn.btn-style"
 }
