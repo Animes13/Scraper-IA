@@ -1,13 +1,12 @@
 {
   "anime_page": {
-    "episodeListContainer": null,
-    "episodeLinks": null
+    "episode_list_container_css_selector": null,
+    "episode_link_css_selector": null
   },
   "episode_page": {
-    "button_player_xpath": "//div[@id='select-player']",
-    "button_player_text": "Player Principal",
-    "iframe_player_url": null,
-    "blogger_url": "https://www.blogger.com/video-play.mp4"
+    "playerButton": null,
+    "playerIframe": null,
+    "bloggerUrl": null
   },
   "episode_links_detected": [
     "https://goyabu.io/37475",
