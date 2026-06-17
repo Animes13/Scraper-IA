@@ -1,12 +1,19 @@
 {
   "anime_page": {
-    "episodes_container_selector": null,
+    "episode_list_container_selector": null,
     "episode_link_selector": null
   },
   "episode_page": {
-    "player_button": null,
-    "player_iframe": null,
-    "blogger_url": "https://www.blogger.com"
+    "player_button": {
+      "selector": "div.player-button",
+      "text": "Assistir Agora",
+      "action": "load_player('https://goyabu.blogspot.com/2023/07/black-clover-dublado-episodio-1.html', 'playerFrame');"
+    },
+    "iframe_player": {
+      "selector": "#playerFrame",
+      "url": "https://goyabu.blogspot.com/2023/07/black-clover-dublado-episodio-1.html"
+    },
+    "blogger_url": "https://goyabu.blogspot.com/2023/07/black-clover-dublado-episodio-1.html"
   },
   "episode_links_detected": [
     "https://goyabu.io/37475",
