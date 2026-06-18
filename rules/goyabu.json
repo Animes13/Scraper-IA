@@ -1,13 +1,12 @@
 {
   "anime_page": {
-    "episode_list_container_selector": "ul.anime-ep-list",
-    "episode_link_selector": "a.epi-link",
-    "episode_title_selector": "a.epi-link > span.epi-name > span.name",
-    "episode_number_selector": "a.epi-link > span.epi-name > span.type"
+    "episodeListContainer": null,
+    "episodeLink": null
   },
   "episode_page": {
-    "player_button": null,
-    "player_iframe": null,
+    "player_button_selector": "div.player-servers-list button.server-btn[data-player]",
+    "player_button_text": "Player 01",
+    "iframe_player_src": "https://goyabu.io/player/?id=37475&s=player-dublado-goyabu-01",
     "blogger_url": null
   },
   "episode_links_detected": [
