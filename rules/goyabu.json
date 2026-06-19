@@ -1,13 +1,12 @@
 {
   "anime_page": {
-    "episodeListContainer": null,
-    "episodeLink": null
+    "episode_list_container_selector": null,
+    "episode_link_selector": null
   },
   "episode_page": {
-    "player_button_selector": "div.player-servers-list button.server-btn[data-player]",
-    "player_button_text": "Player 01",
-    "iframe_player_src": "https://goyabu.io/player/?id=37475&s=player-dublado-goyabu-01",
-    "blogger_url": null
+    "playerButton": null,
+    "playerIframe": null,
+    "bloggerUrl": "https://www.blogger.com"
   },
   "episode_links_detected": [
     "https://goyabu.io/37475",
