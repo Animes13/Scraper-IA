@@ -1,25 +1,12 @@
 {
   "anime_page": {
-    "container_selector": null,
-    "episode_link_selector": null
+    "episode_list_container": null,
+    "episode_links": null
   },
   "episode_page": {
-    "playerButtons": [
-      {
-        "text": "Player 1 (Blogger)",
-        "dataPlayer": "player_1"
-      },
-      {
-        "text": "Player 2 (Mega)",
-        "dataPlayer": "player_2"
-      },
-      {
-        "text": "Player 3 (Gogo)",
-        "dataPlayer": "player_3"
-      }
-    ],
-    "playerIframeUrl": "https://goyabu.io/player/225301/?source=blogger",
-    "bloggerUrl": "https://goyabu.io/player/225301/?source=blogger"
+    "player_button": null,
+    "player_iframe": null,
+    "blogger_url": null
   },
   "episode_links_detected": [
     "https://goyabu.io/37475",
