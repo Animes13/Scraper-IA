@@ -1,11 +1,10 @@
 {
   "anime_page": {
     "episode_list_container": null,
-    "episode_links": null
+    "episode_link": null
   },
   "episode_page": {
-    "player_button_text": null,
-    "player_button_url": null,
+    "player_button_html": "<button class=\"btn-style player-tab\" \n                da",
     "player_iframe_url": null,
     "blogger_url": null
   },
