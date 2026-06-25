@@ -1,17 +1,12 @@
 {
   "anime_page": {
-    "episodeListContainer": null,
-    "episodeLink": null
+    "episode_list_container": null,
+    "episode_link": null
   },
   "episode_page": {
-    "button_player_info": {
-      "selector": "button.player-tab",
-      "text": null,
-      "data_player": null,
-      "warning": "Button text and 'data-player' attribute are truncated in the provided HTML. The element exists but its full details are unavailable."
-    },
-    "iframe_player_url": null,
-    "blogger_url": null
+    "player_button_selector": "button.player-tab",
+    "player_iframe_url": null,
+    "blogger_url_detected": null
   },
   "episode_links_detected": [
     "https://goyabu.io/37475",
