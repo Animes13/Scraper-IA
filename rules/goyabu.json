@@ -1,12 +1,12 @@
 {
   "anime_page": {
-    "episode_list_container": null,
-    "episode_link": null
+    "episodeListContainer": null,
+    "episodeLinks": null
   },
   "episode_page": {
-    "player_button_url": "https://www.blogger.com/video-play.mp4?url=https://s1.vdoccdn.com/f04c6328c0b2f56708f1f50123c52e1f2b4c1a5b8a5d3f2a1b9c8d7e6f0a9b8c7d6e5f4a3b2c1d0e9f8a7b6c5d4e3f2a1b9c8d7e6f0a9b8c7d6e5f4a3b2c1d0e9f8a7b6c5d4e3f2a1b9c8d7e6f0a9b8c7d6e5f4a3b2c1d0e9f8a7b6c5d4e3f2a1b9c8d7e6f0a9b8c7d6e5f4a3b2c1d0e9f8a7b6c5d4e3f2a1b9c8d7e6f0a9b8c7d6e5f4a3b2c1d0e9f8a7b6c5d4e3f2a1b9c8d7e6f0a9b8c7d6e5f4a3b2c1d0e9f8a7b6c52d8",
-    "player_iframe_url": "https://www.blogger.com/video-play.mp4?url=https://s1.vdoccdn.com/f04c6328c0b2f56708f1f50123c52e1f2b4c1a5b8a5d3f2a1b9c8d7e6f0a9b8c7d6e5f4a3b2c1d0e9f8a7b6c5d4e3f2a1b9c8d7e6f0a9b8c7d6e5f4a3b2c1d0e9f8a7b6c5d4e3f2a1b9c8d7e6f0a9b8c7d6e5f4a3b2c1d0e9f8a7b6c5d4e3f2a1b9c8d7e6f0a9b8c7d6e5f4a3b2c1d0e9f8a7b6c5d4e3f2a1b9c8d7e6f0a9b8c7d6e5f4a3b2c1d0e9f8a7b6c5d4e3f2a1b9c8d7e6f0a9b8c7d6e5f4a3b2c1d0e9f8a7b6c5d4e3f2a1b9c8d7e6f0a9b8c7d6e5f4a3b2c1d0e9f8a7b6c52d8",
-    "blogger_url": "https://www.blogger.com/video-play.mp4?url=https://s1.vdoccdn.com/f04c6328c0b2f56708f1f50123c52e1f2b4c1a5b8a5d3f2a1b9c8d7e6f0a9b8c7d6e5f4a3b2c1d0e9f8a7b6c5d4e3f2a1b9c8d7e6f0a9b8c7d6e5f4a3b2c1d0e9f8a7b6c5d4e3f2a1b9c8d7e6f0a9b8c7d6e5f4a3b2c1d0e9f8a7b6c5d4e3f2a1b9c8d7e6f0a9b8c7d6e5f4a3b2c1d0e9f8a7b6c5d4e3f2a1b9c8d7e6f0a9b8c7d6e5f4a3b2c1d0e9f8a7b6c5d4e3f2a1b9c8d7e6f0a9b8c7d6e5f4a3b2c1d0e9f8a7b6c5d4e3f2a1b9c8d7e6f0a9b8c7d6e5f4a3b2c1d0e9f8a7b6c52d8"
+    "player_button": null,
+    "player_iframe": null,
+    "blogger_url": null
   },
   "episode_links_detected": [
     "https://goyabu.io/37475",
