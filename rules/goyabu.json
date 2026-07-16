@@ -1,8 +1,11 @@
 {
-  "anime_page": null,
+  "anime_page": {
+    "container_selector": ".episodes-list",
+    "episode_link_selector": ".episodes-list a"
+  },
   "episode_page": {
-    "player_button": null,
-    "player_iframe": null,
+    "player_button_selector": "button.btn-play",
+    "player_iframe_src": "https://goyabu.io/player/?e=goyabu&v=37475",
     "blogger_url": null
   },
   "episode_links_detected": [
