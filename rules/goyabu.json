@@ -1,14 +1,12 @@
 {
   "anime_page": {
-    "episode_list_container": "ul.list-episodes",
-    "episode_link": {
-      "selector": "li > a",
-      "attribute": "href"
-    }
+    "container_selector": "div.streamer-episode-list",
+    "episode_link_selector": "ul.list-episodes > li > a",
+    "episode_link_attribute": "href"
   },
   "episode_page": {
-    "player_button": null,
-    "player_iframe": null,
+    "player_button_selector": null,
+    "player_iframe_selector": null,
     "blogger_url": "https://www.blogger.com"
   },
   "episode_links_detected": [
