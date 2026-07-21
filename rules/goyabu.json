@@ -1,7 +1,7 @@
 {
   "anime_page": {
-    "container": "//div[contains(@class, 'ep-list-container')]",
-    "link": "./div[contains(@class, 'ep-list-grid')]//a[contains(@class, 'ep-button')]/@href"
+    "episodeListContainer": null,
+    "episodeLink": null
   },
   "episode_page": {
     "playerButton": null,
