@@ -1,7 +1,8 @@
 {
   "anime_page": {
-    "episode_list_container": "//div[contains(@class, 'list-episodes-content')]",
-    "episode_link": "./a[contains(@class, 'anime-item')]/@href"
+    "container_selector": ".list-ep",
+    "episode_selector": "a.btn-episode",
+    "link_attribute": "href"
   },
   "episode_page": {
     "player_button": null,
