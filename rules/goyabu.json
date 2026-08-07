@@ -1,11 +1,11 @@
 {
   "anime_page": {
-    "container_selector": "ul.episode-list.grid-list",
-    "episode_links_selector": "li > a"
+    "episodeListContainerSelector": null,
+    "episodeLinkSelector": null
   },
   "episode_page": {
     "playerButton": null,
-    "playerIframe": null,
+    "iframePlayer": null,
     "bloggerUrl": "https://www.blogger.com"
   },
   "episode_links_detected": [
