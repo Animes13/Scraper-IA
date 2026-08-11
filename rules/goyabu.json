@@ -1,21 +1,12 @@
 {
   "anime_page": {
-    "episodeListContainer": {
-      "selector": "ul.list-episodes",
-      "extract": "xpath",
-      "attribute": null,
-      "output": "first"
-    },
-    "episodeLinks": {
-      "selector": "li > a",
-      "extract": "attribute",
-      "attribute": "href",
-      "output": "array"
-    }
+    "container_selector": "div#episodios div.list-series-episodes",
+    "link_selector": "a.btn-primary-small",
+    "attribute": "href"
   },
   "episode_page": {
-    "player_button_selector": null,
-    "player_iframe_selector": null,
+    "player_button": null,
+    "player_iframe": null,
     "blogger_url": null
   },
   "episode_links_detected": [
