@@ -1,9 +1,9 @@
 {
   "stream": {
-    "count": 35191414,
-    "last_failure": "2026-08-15T06:17:08.929497",
+    "count": 35240208,
+    "last_failure": "2026-08-15T10:11:43.452906",
     "reasons": {
-      "scraper_failed": 35191414
+      "scraper_failed": 35240208
     }
   }
 }
