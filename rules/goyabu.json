@@ -1,189 +1,714 @@
 {
   "anime_page": {
-    "episode_list_container": "The JavaScript variable 'allEpisodes' (an array of episode objects) found within a <script> tag in the HTML.",
-    "episode_links": [
-      "https://goyabu.io/37475",
-      "https://goyabu.io/37476",
-      "https://goyabu.io/37477",
-      "https://goyabu.io/37478",
-      "https://goyabu.io/37479",
-      "https://goyabu.io/37480",
-      "https://goyabu.io/37481",
-      "https://goyabu.io/37482",
-      "https://goyabu.io/37483",
-      "https://goyabu.io/37484",
-      "https://goyabu.io/37485",
-      "https://goyabu.io/37486",
-      "https://goyabu.io/37487",
-      "https://goyabu.io/37488",
-      "https://goyabu.io/37489",
-      "https://goyabu.io/37490",
-      "https://goyabu.io/37491",
-      "https://goyabu.io/37492",
-      "https://goyabu.io/37493",
-      "https://goyabu.io/37494",
-      "https://goyabu.io/37495",
-      "https://goyabu.io/37496",
-      "https://goyabu.io/37497",
-      "https://goyabu.io/37498",
-      "https://goyabu.io/37499",
-      "https://goyabu.io/37500",
-      "https://goyabu.io/37501",
-      "https://goyabu.io/37502",
-      "https://goyabu.io/37503",
-      "https://goyabu.io/37504",
-      "https://goyabu.io/37505",
-      "https://goyabu.io/37506",
-      "https://goyabu.io/37507",
-      "https://goyabu.io/37508",
-      "https://goyabu.io/37509",
-      "https://goyabu.io/37510",
-      "https://goyabu.io/37511",
-      "https://goyabu.io/37512",
-      "https://goyabu.io/37513",
-      "https://goyabu.io/37514",
-      "https://goyabu.io/37515",
-      "https://goyabu.io/37516",
-      "https://goyabu.io/37517",
-      "https://goyabu.io/37518",
-      "https://goyabu.io/37519",
-      "https://goyabu.io/37520",
-      "https://goyabu.io/37521",
-      "https://goyabu.io/37522",
-      "https://goyabu.io/37523",
-      "https://goyabu.io/37524",
-      "https://goyabu.io/37525",
-      "https://goyabu.io/37526",
-      "https://goyabu.io/37527",
-      "https://goyabu.io/37528",
-      "https://goyabu.io/37529",
-      "https://goyabu.io/37530",
-      "https://goyabu.io/37531",
-      "https://goyabu.io/37532",
-      "https://goyabu.io/37533",
-      "https://goyabu.io/37534",
-      "https://goyabu.io/37535",
-      "https://goyabu.io/37536",
-      "https://goyabu.io/37537",
-      "https://goyabu.io/37538",
-      "https://goyabu.io/37539",
-      "https://goyabu.io/37540",
-      "https://goyabu.io/37541",
-      "https://goyabu.io/37542",
-      "https://goyabu.io/37543",
-      "https://goyabu.io/37544",
-      "https://goyabu.io/37551",
-      "https://goyabu.io/37552",
-      "https://goyabu.io/37553",
-      "https://goyabu.io/37554",
-      "https://goyabu.io/37555",
-      "https://goyabu.io/37556",
-      "https://goyabu.io/37557",
-      "https://goyabu.io/37558",
-      "https://goyabu.io/37559",
-      "https://goyabu.io/37560",
-      "https://goyabu.io/37561",
-      "https://goyabu.io/37562",
-      "https://goyabu.io/37563",
-      "https://goyabu.io/37564",
-      "https://goyabu.io/37565",
-      "https://goyabu.io/37566",
-      "https://goyabu.io/37567",
-      "https://goyabu.io/37568",
-      "https://goyabu.io/37569",
-      "https://goyabu.io/37545",
-      "https://goyabu.io/37546",
-      "https://goyabu.io/37547",
-      "https://goyabu.io/37548",
-      "https://goyabu.io/37549",
-      "https://goyabu.io/37550",
-      "https://goyabu.io/37570",
-      "https://goyabu.io/37571",
-      "https://goyabu.io/37572",
-      "https://goyabu.io/37573",
-      "https://goyabu.io/37574",
-      "https://goyabu.io/37576",
-      "https://goyabu.io/37577",
-      "https://goyabu.io/37578",
-      "https://goyabu.io/37579",
-      "https://goyabu.io/37580",
-      "https://goyabu.io/37581",
-      "https://goyabu.io/37582",
-      "https://goyabu.io/37583",
-      "https://goyabu.io/37584",
-      "https://goyabu.io/37585",
-      "https://goyabu.io/37586",
-      "https://goyabu.io/37587",
-      "https://goyabu.io/37588",
-      "https://goyabu.io/37589",
-      "https://goyabu.io/37590",
-      "https://goyabu.io/37591",
-      "https://goyabu.io/37592",
-      "https://goyabu.io/37593",
-      "https://goyabu.io/37594",
-      "https://goyabu.io/37595",
-      "https://goyabu.io/37596",
-      "https://goyabu.io/37597",
-      "https://goyabu.io/37598",
-      "https://goyabu.io/37599",
-      "https://goyabu.io/37600",
-      "https://goyabu.io/37601",
-      "https://goyabu.io/37602",
-      "https://goyabu.io/37603",
-      "https://goyabu.io/37604",
-      "https://goyabu.io/37605",
-      "https://goyabu.io/37606",
-      "https://goyabu.io/37607",
-      "https://goyabu.io/37608",
-      "https://goyabu.io/37609",
-      "https://goyabu.io/37610",
-      "https://goyabu.io/37611",
-      "https://goyabu.io/37612",
-      "https://goyabu.io/37613",
-      "https://goyabu.io/37614",
-      "https://goyabu.io/37615",
-      "https://goyabu.io/37616",
-      "https://goyabu.io/37617",
-      "https://goyabu.io/37618",
-      "https://goyabu.io/37619",
-      "https://goyabu.io/37620",
-      "https://goyabu.io/37621",
-      "https://goyabu.io/37622",
-      "https://goyabu.io/37623",
-      "https://goyabu.io/37624",
-      "https://goyabu.io/37625",
-      "https://goyabu.io/37626",
-      "https://goyabu.io/37627",
-      "https://goyabu.io/37628",
-      "https://goyabu.io/44330",
-      "https://goyabu.io/44331",
-      "https://goyabu.io/44332",
-      "https://goyabu.io/44333",
-      "https://goyabu.io/44334",
-      "https://goyabu.io/44335",
-      "https://goyabu.io/44336",
-      "https://goyabu.io/44337",
-      "https://goyabu.io/44338",
-      "https://goyabu.io/44339",
-      "https://goyabu.io/44340",
-      "https://goyabu.io/44341",
-      "https://goyabu.io/44342",
-      "https://goyabu.io/44343",
-      "https://goyabu.io/44344",
-      "https://goyabu.io/44345",
-      "https://goyabu.io/44346"
+    "container_selector": "#episodes-container",
+    "episode_link_selector": "#episodes-container a",
+    "episodes": [
+      {
+        "number": "1",
+        "url": "https://goyabu.io/37475"
+      },
+      {
+        "number": "2",
+        "url": "https://goyabu.io/37476"
+      },
+      {
+        "number": "3",
+        "url": "https://goyabu.io/37477"
+      },
+      {
+        "number": "4",
+        "url": "https://goyabu.io/37478"
+      },
+      {
+        "number": "5",
+        "url": "https://goyabu.io/37479"
+      },
+      {
+        "number": "6",
+        "url": "https://goyabu.io/37480"
+      },
+      {
+        "number": "7",
+        "url": "https://goyabu.io/37481"
+      },
+      {
+        "number": "8",
+        "url": "https://goyabu.io/37482"
+      },
+      {
+        "number": "9",
+        "url": "https://goyabu.io/37483"
+      },
+      {
+        "number": "10",
+        "url": "https://goyabu.io/37484"
+      },
+      {
+        "number": "11",
+        "url": "https://goyabu.io/37485"
+      },
+      {
+        "number": "12",
+        "url": "https://goyabu.io/37486"
+      },
+      {
+        "number": "13",
+        "url": "https://goyabu.io/37487"
+      },
+      {
+        "number": "14",
+        "url": "https://goyabu.io/37488"
+      },
+      {
+        "number": "15",
+        "url": "https://goyabu.io/37489"
+      },
+      {
+        "number": "16",
+        "url": "https://goyabu.io/37490"
+      },
+      {
+        "number": "17",
+        "url": "https://goyabu.io/37491"
+      },
+      {
+        "number": "18",
+        "url": "https://goyabu.io/37492"
+      },
+      {
+        "number": "19",
+        "url": "https://goyabu.io/37493"
+      },
+      {
+        "number": "20",
+        "url": "https://goyabu.io/37494"
+      },
+      {
+        "number": "21",
+        "url": "https://goyabu.io/37495"
+      },
+      {
+        "number": "22",
+        "url": "https://goyabu.io/37496"
+      },
+      {
+        "number": "23",
+        "url": "https://goyabu.io/37497"
+      },
+      {
+        "number": "24",
+        "url": "https://goyabu.io/37498"
+      },
+      {
+        "number": "25",
+        "url": "https://goyabu.io/37499"
+      },
+      {
+        "number": "26",
+        "url": "https://goyabu.io/37500"
+      },
+      {
+        "number": "27",
+        "url": "https://goyabu.io/37501"
+      },
+      {
+        "number": "28",
+        "url": "https://goyabu.io/37502"
+      },
+      {
+        "number": "29",
+        "url": "https://goyabu.io/37503"
+      },
+      {
+        "number": "30",
+        "url": "https://goyabu.io/37504"
+      },
+      {
+        "number": "31",
+        "url": "https://goyabu.io/37505"
+      },
+      {
+        "number": "32",
+        "url": "https://goyabu.io/37506"
+      },
+      {
+        "number": "33",
+        "url": "https://goyabu.io/37507"
+      },
+      {
+        "number": "34",
+        "url": "https://goyabu.io/37508"
+      },
+      {
+        "number": "35",
+        "url": "https://goyabu.io/37509"
+      },
+      {
+        "number": "36",
+        "url": "https://goyabu.io/37510"
+      },
+      {
+        "number": "37",
+        "url": "https://goyabu.io/37511"
+      },
+      {
+        "number": "38",
+        "url": "https://goyabu.io/37512"
+      },
+      {
+        "number": "39",
+        "url": "https://goyabu.io/37513"
+      },
+      {
+        "number": "40",
+        "url": "https://goyabu.io/37514"
+      },
+      {
+        "number": "41",
+        "url": "https://goyabu.io/37515"
+      },
+      {
+        "number": "42",
+        "url": "https://goyabu.io/37516"
+      },
+      {
+        "number": "43",
+        "url": "https://goyabu.io/37517"
+      },
+      {
+        "number": "44",
+        "url": "https://goyabu.io/37518"
+      },
+      {
+        "number": "45",
+        "url": "https://goyabu.io/37519"
+      },
+      {
+        "number": "46",
+        "url": "https://goyabu.io/37520"
+      },
+      {
+        "number": "47",
+        "url": "https://goyabu.io/37521"
+      },
+      {
+        "number": "48",
+        "url": "https://goyabu.io/37522"
+      },
+      {
+        "number": "49",
+        "url": "https://goyabu.io/37523"
+      },
+      {
+        "number": "50",
+        "url": "https://goyabu.io/37524"
+      },
+      {
+        "number": "51",
+        "url": "https://goyabu.io/37525"
+      },
+      {
+        "number": "52",
+        "url": "https://goyabu.io/37526"
+      },
+      {
+        "number": "53",
+        "url": "https://goyabu.io/37527"
+      },
+      {
+        "number": "54",
+        "url": "https://goyabu.io/37528"
+      },
+      {
+        "number": "55",
+        "url": "https://goyabu.io/37529"
+      },
+      {
+        "number": "56",
+        "url": "https://goyabu.io/37530"
+      },
+      {
+        "number": "57",
+        "url": "https://goyabu.io/37531"
+      },
+      {
+        "number": "58",
+        "url": "https://goyabu.io/37532"
+      },
+      {
+        "number": "59",
+        "url": "https://goyabu.io/37533"
+      },
+      {
+        "number": "60",
+        "url": "https://goyabu.io/37534"
+      },
+      {
+        "number": "61",
+        "url": "https://goyabu.io/37535"
+      },
+      {
+        "number": "62",
+        "url": "https://goyabu.io/37536"
+      },
+      {
+        "number": "63",
+        "url": "https://goyabu.io/37537"
+      },
+      {
+        "number": "64",
+        "url": "https://goyabu.io/37538"
+      },
+      {
+        "number": "65",
+        "url": "https://goyabu.io/37539"
+      },
+      {
+        "number": "66",
+        "url": "https://goyabu.io/37540"
+      },
+      {
+        "number": "67",
+        "url": "https://goyabu.io/37541"
+      },
+      {
+        "number": "68",
+        "url": "https://goyabu.io/37542"
+      },
+      {
+        "number": "69",
+        "url": "https://goyabu.io/37543"
+      },
+      {
+        "number": "70",
+        "url": "https://goyabu.io/37544"
+      },
+      {
+        "number": "71",
+        "url": "https://goyabu.io/37551"
+      },
+      {
+        "number": "72",
+        "url": "https://goyabu.io/37552"
+      },
+      {
+        "number": "73",
+        "url": "https://goyabu.io/37553"
+      },
+      {
+        "number": "74",
+        "url": "https://goyabu.io/37554"
+      },
+      {
+        "number": "75",
+        "url": "https://goyabu.io/37555"
+      },
+      {
+        "number": "76",
+        "url": "https://goyabu.io/37556"
+      },
+      {
+        "number": "77",
+        "url": "https://goyabu.io/37557"
+      },
+      {
+        "number": "78",
+        "url": "https://goyabu.io/37558"
+      },
+      {
+        "number": "79",
+        "url": "https://goyabu.io/37559"
+      },
+      {
+        "number": "80",
+        "url": "https://goyabu.io/37560"
+      },
+      {
+        "number": "81",
+        "url": "https://goyabu.io/37561"
+      },
+      {
+        "number": "82",
+        "url": "https://goyabu.io/37562"
+      },
+      {
+        "number": "83",
+        "url": "https://goyabu.io/37563"
+      },
+      {
+        "number": "84",
+        "url": "https://goyabu.io/37564"
+      },
+      {
+        "number": "85",
+        "url": "https://goyabu.io/37565"
+      },
+      {
+        "number": "86",
+        "url": "https://goyabu.io/37566"
+      },
+      {
+        "number": "87",
+        "url": "https://goyabu.io/37567"
+      },
+      {
+        "number": "88",
+        "url": "https://goyabu.io/37568"
+      },
+      {
+        "number": "89",
+        "url": "https://goyabu.io/37569"
+      },
+      {
+        "number": "90",
+        "url": "https://goyabu.io/37545"
+      },
+      {
+        "number": "91",
+        "url": "https://goyabu.io/37546"
+      },
+      {
+        "number": "92",
+        "url": "https://goyabu.io/37547"
+      },
+      {
+        "number": "93",
+        "url": "https://goyabu.io/37548"
+      },
+      {
+        "number": "94",
+        "url": "https://goyabu.io/37549"
+      },
+      {
+        "number": "95",
+        "url": "https://goyabu.io/37550"
+      },
+      {
+        "number": "96",
+        "url": "https://goyabu.io/37570"
+      },
+      {
+        "number": "97",
+        "url": "https://goyabu.io/37571"
+      },
+      {
+        "number": "98",
+        "url": "https://goyabu.io/37572"
+      },
+      {
+        "number": "99",
+        "url": "https://goyabu.io/37573"
+      },
+      {
+        "number": "100",
+        "url": "https://goyabu.io/37574"
+      },
+      {
+        "number": "101",
+        "url": "https://goyabu.io/37576"
+      },
+      {
+        "number": "102",
+        "url": "https://goyabu.io/37577"
+      },
+      {
+        "number": "103",
+        "url": "https://goyabu.io/37578"
+      },
+      {
+        "number": "104",
+        "url": "https://goyabu.io/37579"
+      },
+      {
+        "number": "105",
+        "url": "https://goyabu.io/37580"
+      },
+      {
+        "number": "106",
+        "url": "https://goyabu.io/37581"
+      },
+      {
+        "number": "107",
+        "url": "https://goyabu.io/37582"
+      },
+      {
+        "number": "108",
+        "url": "https://goyabu.io/37583"
+      },
+      {
+        "number": "109",
+        "url": "https://goyabu.io/37584"
+      },
+      {
+        "number": "110",
+        "url": "https://goyabu.io/37585"
+      },
+      {
+        "number": "111",
+        "url": "https://goyabu.io/37586"
+      },
+      {
+        "number": "112",
+        "url": "https://goyabu.io/37587"
+      },
+      {
+        "number": "113",
+        "url": "https://goyabu.io/37588"
+      },
+      {
+        "number": "114",
+        "url": "https://goyabu.io/37589"
+      },
+      {
+        "number": "115",
+        "url": "https://goyabu.io/37590"
+      },
+      {
+        "number": "116",
+        "url": "https://goyabu.io/37591"
+      },
+      {
+        "number": "117",
+        "url": "https://goyabu.io/37592"
+      },
+      {
+        "number": "118",
+        "url": "https://goyabu.io/37593"
+      },
+      {
+        "number": "119",
+        "url": "https://goyabu.io/37594"
+      },
+      {
+        "number": "120",
+        "url": "https://goyabu.io/37595"
+      },
+      {
+        "number": "121",
+        "url": "https://goyabu.io/37596"
+      },
+      {
+        "number": "122",
+        "url": "https://goyabu.io/37597"
+      },
+      {
+        "number": "123",
+        "url": "https://goyabu.io/37598"
+      },
+      {
+        "number": "124",
+        "url": "https://goyabu.io/37599"
+      },
+      {
+        "number": "125",
+        "url": "https://goyabu.io/37600"
+      },
+      {
+        "number": "126",
+        "url": "https://goyabu.io/37601"
+      },
+      {
+        "number": "127",
+        "url": "https://goyabu.io/37602"
+      },
+      {
+        "number": "128",
+        "url": "https://goyabu.io/37603"
+      },
+      {
+        "number": "129",
+        "url": "https://goyabu.io/37604"
+      },
+      {
+        "number": "130",
+        "url": "https://goyabu.io/37605"
+      },
+      {
+        "number": "131",
+        "url": "https://goyabu.io/37606"
+      },
+      {
+        "number": "132",
+        "url": "https://goyabu.io/37607"
+      },
+      {
+        "number": "133",
+        "url": "https://goyabu.io/37608"
+      },
+      {
+        "number": "134",
+        "url": "https://goyabu.io/37609"
+      },
+      {
+        "number": "135",
+        "url": "https://goyabu.io/37610"
+      },
+      {
+        "number": "136",
+        "url": "https://goyabu.io/37611"
+      },
+      {
+        "number": "137",
+        "url": "https://goyabu.io/37612"
+      },
+      {
+        "number": "138",
+        "url": "https://goyabu.io/37613"
+      },
+      {
+        "number": "139",
+        "url": "https://goyabu.io/37614"
+      },
+      {
+        "number": "140",
+        "url": "https://goyabu.io/37615"
+      },
+      {
+        "number": "141",
+        "url": "https://goyabu.io/37616"
+      },
+      {
+        "number": "142",
+        "url": "https://goyabu.io/37617"
+      },
+      {
+        "number": "143",
+        "url": "https://goyabu.io/37618"
+      },
+      {
+        "number": "144",
+        "url": "https://goyabu.io/37619"
+      },
+      {
+        "number": "145",
+        "url": "https://goyabu.io/37620"
+      },
+      {
+        "number": "146",
+        "url": "https://goyabu.io/37621"
+      },
+      {
+        "number": "147",
+        "url": "https://goyabu.io/37622"
+      },
+      {
+        "number": "148",
+        "url": "https://goyabu.io/37623"
+      },
+      {
+        "number": "149",
+        "url": "https://goyabu.io/37624"
+      },
+      {
+        "number": "150",
+        "url": "https://goyabu.io/37625"
+      },
+      {
+        "number": "151",
+        "url": "https://goyabu.io/37626"
+      },
+      {
+        "number": "152",
+        "url": "https://goyabu.io/37627"
+      },
+      {
+        "number": "153",
+        "url": "https://goyabu.io/37628"
+      },
+      {
+        "number": "154",
+        "url": "https://goyabu.io/44330"
+      },
+      {
+        "number": "155",
+        "url": "https://goyabu.io/44331"
+      },
+      {
+        "number": "156",
+        "url": "https://goyabu.io/44332"
+      },
+      {
+        "number": "157",
+        "url": "https://goyabu.io/44333"
+      },
+      {
+        "number": "158",
+        "url": "https://goyabu.io/44334"
+      },
+      {
+        "number": "159",
+        "url": "https://goyabu.io/44335"
+      },
+      {
+        "number": "160",
+        "url": "https://goyabu.io/44336"
+      },
+      {
+        "number": "161",
+        "url": "https://goyabu.io/44337"
+      },
+      {
+        "number": "162",
+        "url": "https://goyabu.io/44338"
+      },
+      {
+        "number": "163",
+        "url": "https://goyabu.io/44339"
+      },
+      {
+        "number": "164",
+        "url": "https://goyabu.io/44340"
+      },
+      {
+        "number": "165",
+        "url": "https://goyabu.io/44341"
+      },
+      {
+        "number": "166",
+        "url": "https://goyabu.io/44342"
+      },
+      {
+        "number": "167",
+        "url": "https://goyabu.io/44343"
+      },
+      {
+        "number": "168",
+        "url": "https://goyabu.io/44344"
+      },
+      {
+        "number": "169",
+        "url": "https://goyabu.io/44345"
+      },
+      {
+        "number": "170",
+        "url": "https://goyabu.io/44346"
+      }
     ]
   },
   "episode_page": {
-    "player_button": {
-      "text": "Player HD",
-      "selector": "button.player-tab[data-player-index='0']"
+    "player_buttons": [
+      {
+        "name": "Player HD",
+        "index": 0,
+        "type": "iframe",
+        "blogger_url_encrypted": "QUNXb1BESDBEV25jbFZKOC12cXprQzlGeUFpRHZkZjBUWmtoNEpMdW5wa2FoTG1KUnZqd2ZLRjl2eTAtR2RFM0R4cGVCbjJqMEYxd1JtZXhqR2Y5V3lxX0JRTE42dHZoV25GaHh5ZVNYQkdKZHFYblh5WDFDWHhZYk91cDROeGFHNl9Qd2Q1djZEQT1uZWtvdD9nLm9lZGl2L21vYy5yZWdnb2xiLnd3dy8vOnNwdHRo"
+      },
+      {
+        "name": "Player FHD",
+        "index": 1,
+        "type": "blogger_jwplayer"
+      }
+    ],
+    "iframe_player": {
+      "src": "https://www.blogger.com/video.g?token=AD6v5dwP_6GaxN4puObYxXC1XyXnXqdJGBXSeyxhFnWhvt6NLQB_qyW9fGjxemRw1F0j2nBepxD3EdG-0yv9FKfwjvRJmLhakpnuLJ4hkZT0fdvDiAyF9Ckzqv-8JVlcnWD0HDPoWCA==",
+      "blogger_url_encrypted_attribute": "QUNXb1BESDBEV25jbFZKOC12cXprQzlGeUFpRHZkZjBUWmtoNEpMdW5wa2FoTG1KUnZqd2ZLRjl2eTAtR2RFM0R4cGVCbjJqMEYxd1JtZXhqR2Y5V3lxX0JRTE42dHZoV25GaHh5ZVNYQkdKZHFYblh5WDFDWHhZYk91cDROeGFHNl9Qd2Q1djZEQT1uZWtvdD9nLm9lZGl2L21vYy5yZWdnb2xiLnd3dy8vOnNwdHRo",
+      "blogger_url_decrypted_attribute": "https://www.blogger.com/video.g?token=AD6v5dwP_6GaxN4puObYxXC1XyXnXqdJGBXSeyxhFnWhvt6NLQB_qyW9fGjxemRw1F0j2nBepxD3EdG-0yv9FKfwjvRJmLhakpnuLJ4hkZT0fdvDiAyF9Ckzqv-8JVlcnWD0HDPoWCA=="
     },
-    "player_iframe": {
-      "src": "https://www.blogger.com/video.g?nekot=AD6v5dwP_6GaxN4puObYxXC1XyXnXqdJGBXSeyxhFnWhvt6NLQB_qyW9fGjxemRw1F0j2nBepxD3EdG-0yv9FKfwjvRJmLhakpnuLJ4hkZT0fdvDiAyF9Ckzqv-8JVlcnWD0HDPoWCA",
-      "selector": "#player iframe"
-    },
-    "blogger_url": "https://www.blogger.com/video.g?nekot=AD6v5dwP_6GaxN4puObYxXC1XyXnXqdJGBXSeyxhFnWhvt6NLQB_qyW9fGjxemRw1F0j2nBepxD3EdG-0yv9FKfwjvRJmLhakpnuLJ4hkZT0fdvDiAyF9Ckzqv-8JVlcnWD0HDPoWCA"
+    "blogger_player_direct": {
+      "url": "https://www.blogger.com/video.g?token=AD6v5dwP_6GaxN4puObYxXC1XyXnXqdJGBXSeyxhFnWhvt6NLQB_qyW9fGjxemRw1F0j2nBepxD3EdG-0yv9FKfwjvRJmLhakpnuLJ4hkZT0fdvDiAyF9Ckzqv-8JVlcnWD0HDPoWCA",
+      "token_encrypted": "QUNXb1BESDBEV25jbFZKOC12cXprQzlGeUFpRHZkZjBUWmtoNEpMdW5wa2FoTG1KUnZqd2ZLRjl2eTAtR2RFM0R4cGVCbjJqMEYxd1JtZXhqR2Y5V3lxX0JRTE42dHZoV25GaHh5ZVNYQkdKZHFYblh5WDFDWHhZYk91cDROeGFHNl9Qd2Q1djZEQQ==",
+      "token_decrypted": "AD6v5dwP_6GaxN4puObYxXC1XyXnXqdJGBXSeyxhFnWhvt6NLQB_qyW9fGjxemRw1F0j2nBepxD3EdG-0yv9FKfwjvRJmLhakpnuLJ4hkZT0fdvDiAyF9Ckzqv-8JVlcnWD0HDPoWCA=="
+    }
   },
   "episode_links_detected": [
     "https://goyabu.io/37475",
