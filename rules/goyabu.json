@@ -1,9 +1,7 @@
 {
   "anime_page": {
-    "container_selector": "div#episodes-container",
-    "episode_link_selector": "article.boxEP a",
-    "base_url": "https://goyabu.io",
-    "episodes": [
+    "episode_list_container_selector": "div#episodes-container",
+    "episode_links": [
       "https://goyabu.io/37475",
       "https://goyabu.io/37476",
       "https://goyabu.io/37477",
@@ -177,23 +175,19 @@
     ]
   },
   "episode_page": {
-    "player_buttons": [
-      {
-        "text": "Player HD",
-        "data_player_index": "0",
-        "data_player_type": "iframe",
-        "data_blogger_url_encrypted": "QUNXb1BESDBEV25jbFZKOC12cXprQzlGeUFpRHZkZjBUWmtoNEpMdW5wa2FoTG1KUnZqd2ZLRjl2eTAtR2RFM0R4cGVCbjJqMEYxd1JtZXhqR2Y5V3lxX0JRTE42dHZoV25GaHh5ZVNYQkdKZHFYblh5WDFDWHhZYk91cDROeGFHNl9Qd2Q1djZEQT1uZWtvdD9nLm9lZGl2L21vYy5yZWdnb2xiLnd3dy8vOnNwdHRo",
-        "onclick_action": "switchPlayer(0)"
-      },
-      {
-        "text": "Player FHD",
-        "data_player_index": "1",
-        "data_original_index": "0",
-        "onclick_action": "switchPlayer(1)"
+    "player_button": {
+      "selector": "button.player-tab[data-player-index=\"0\"]",
+      "text": "Player HD",
+      "data_attributes": {
+        "player_index": "0",
+        "player_type": "iframe",
+        "blogger_url_encrypted": "QUNXb1BESDBEV25jbFZKOC12cXprQzlGeUFpRHZkZjBUWmtoNEpMdW5wa2FoTG1KUnZqd2ZLRjl2eTAtR2RFM0R4cGVCbjJqMEYxd1JtZXhqR2Y5V3lxX0JRTE42dHZoV25GaHh5ZVNYQkdKZHFYblh5WDFDWHhZYk91cDROeGFHNl9Qd2Q1djZEQT1uZWtvdD9nLm9lZGl2L21vYy5yZWdnb2xiLnd3dy8vOnNwdHRo"
       }
-    ],
-    "player_iframe_src": "https://www.blogger.com/video.g?token=AD6v5dwP_6GaxN4puObYxXC1XyXnXqdJGBXSeyxhFnWhvt6NLQB_qyW9fGjxemRw1F0j2nBepxD3EdG-0yv9FKfwjvRJmLhakpnuLJ4hkZT0fdwDiAyF9Ckzqv-8JVlcnWD0HDPoWCA",
-    "blogger_url": "https://www.blogger.com/video.g?token=AD6v5dwP_6GaxN4puObYxXC1XyXnXqdJGBXSeyxhFnWhvt6NLQB_qyW9fGjxemRw1F0j2nBepxD3EdG-0yv9FKfwjvRJmLhakpnuLJ4hkZT0fdwDiAyF9Ckzqv-8JVlcnWD0HDPoWCA"
+    },
+    "player_iframe": {
+      "url": "https://www.blogger.com/video.g?token=AD6v5dwP_6GaxN4puObYxXC1XyXnXqdJGBXSeyxhFnWhvt6NLQB_qyW9fGjxemRw1F0j2nBepxD3EdG-0yv9FKfwjvRJmLhakpnuLJ4hkZT0fdvDiAyF9Ckzqv-8JVlcnWD0HDPoWCA"
+    },
+    "blogger_url": "https://www.blogger.com/video.g?token=AD6v5dwP_6GaxN4puObYxXC1XyXnXqdJGBXSeyxhFnWhvt6NLQB_qyW9fGjxemRw1F0j2nBepxD3EdG-0yv9FKfwjvRJmLhakpnuLJ4hkZT0fdvDiAyF9Ckzqv-8JVlcnWD0HDPoWCA"
   },
   "episode_links_detected": [
     "https://goyabu.io/37475",
